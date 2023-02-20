@@ -7,7 +7,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "uk.ac.bournemouth.ap.battleships"
+        applicationId = "com.example.s5306951"
         minSdk = 16
         targetSdk = 33
         versionCode = 1
@@ -37,8 +37,8 @@ dependencies {
     implementation(project(":logic"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${rootProject.extra["kotlin_version"]}")
     implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.0")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit_version"]}")
     testImplementation("org.junit.jupiter:junit-jupiter-params:${rootProject.extra["junit_version"]}")
