@@ -1,5 +1,5 @@
 package Bships
-
+//student grid in game to make guesses and place ships
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
@@ -31,17 +31,15 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
             //return GuessResult.INVALID
             throw IllegalArgumentException("Invalid coordinates: ($column, $row)")
         }
-
         // Check if the cell at the given coordinates has already been guessed
         //else if????
         if (cells[column, row] != GuessCell.UNSET) {
           //  return GuessResult.INVALID
             throw IllegalArgumentException("already been guessed?")
         }
-
         // Update the cell at the given coordinates to reflect the result of the guess
         val shipIndex = opponent.shootAt(column, row)
-        cells[column, row] = if (shipIndex >= 0) GuessCell.HIT else GuessCell.MISS
+        cells[column, row] = (if (shipIndex >= 0) GuessCell.HIT else GuessCell.MISS) as GuessCell
 
         // Return the appropriate GuessResult based on the result of the guess
         return if (shipIndex >= 0) {
@@ -52,11 +50,25 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     }
 
 
+    private val gameChangeListeners = mutableListOf<BattleshipGrid.BattleshipGridListener>()
+
     override fun addOnGridChangeListener(listener: BattleshipGrid.BattleshipGridListener) {
-        TODO("Not yet implemented")
+       if(listener !in gameChangeListeners){
+           gameChangeListeners.add(listener)
+       }//else remove OnGridChangeListener?
     }
 
     override fun removeOnGridChangeListener(listener: BattleshipGrid.BattleshipGridListener) {
-        TODO("Not yet implemented")
+        gameChangeListeners.remove(listener)
+    }
+    /**
+     * This will execute the onGameChange method on all listeners (like the ButtonView).
+     */
+    private fun fireGridChange() {
+        //where to call fireGameChange
+        //when we want to change the state of game
+        for(listener in gameChangeListeners) {
+            listener.onGridChanged(this, columns, rows)
+        }
     }
 }

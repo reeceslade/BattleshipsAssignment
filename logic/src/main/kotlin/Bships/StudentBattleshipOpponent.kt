@@ -2,7 +2,7 @@ package Bships
 
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
 import uk.ac.bournemouth.ap.battleshiplib.Ship
-
+//opponent logic
 class StudentBattleshipOpponent(
     override val columns: Int,
     override val rows: Int,

@@ -24,6 +24,8 @@ interface BattleshipOpponent {
      */
     fun shipAt(column: Int, row: Int): ShipInfo<Ship>?
 
+    fun shootAt(column: Int, row: Int): Int
+
     /**
      * Simple class to hold information about a ship, both the index and the ship itself
      */

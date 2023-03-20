@@ -6,5 +6,4 @@ sealed class GuessResult {
     }
     data class HIT(val shipIndex:Int) : GuessResult()
     data class SUNK(val shipIndex: Int) : GuessResult()
-
     }

@@ -6,6 +6,8 @@ import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
 
 interface Ship {
+    fun isSunk(): Boolean
+
     val top: Int
     val left: Int
     val bottom: Int
