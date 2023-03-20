@@ -1,5 +1,8 @@
 package org.example.student.battleshipgame
 
+import Bships.StudentGrid
+import Bships.StudentBattleshipOpponent
+import Bships.StudentShip
 import uk.ac.bournemouth.ap.battleshiplib.*
 import uk.ac.bournemouth.ap.battleshiplib.test.BattleshipTest
 import uk.ac.bournemouth.ap.lib.matrix.boolean.BooleanMatrix
@@ -32,13 +35,13 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     override fun createGrid(
         grid: BooleanMatrix,
         opponent: BattleshipOpponent
-    ): StudentBattleshipGrid {
+    ): StudentGrid {
         // If the opponent is not a StudentBattleshipOpponent, create it based upon the passed in data
         val studentOpponent =
             opponent as? StudentBattleshipOpponent
                 ?: createOpponent(opponent.columns, opponent.rows, opponent.ships.map { it as? StudentShip ?: transformShip(it) })
 
-        return StudentBattleshipGrid(studentOpponent)
+        return StudentGrid(studentOpponent)
     }
 }
 
