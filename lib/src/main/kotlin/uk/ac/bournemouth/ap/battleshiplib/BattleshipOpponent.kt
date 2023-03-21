@@ -1,7 +1,7 @@
 package uk.ac.bournemouth.ap.battleshiplib
 
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
-
+//ships to guess
 interface BattleshipOpponent {
     /**
      * The amount of columns in the game grid (how wide is the grid).
