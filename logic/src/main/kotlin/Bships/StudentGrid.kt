@@ -38,7 +38,8 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
             "already been guessed?"
         }
         val shipIndex = opponent.shootAt(column, row)
-        cells[column, row] = if (shipIndex >= 0) GuessCell.HIT(shipIndex) else GuessCell.MISS        return if (shipIndex >= 0) {
+        cells[column, row] = if (shipIndex >= 0) GuessCell.HIT(shipIndex) else GuessCell.MISS
+        return if (shipIndex >= 0) {
             if (opponent.ships[shipIndex].isSunk()) GuessResult.SUNK(shipIndex) else GuessResult.HIT(shipIndex)
         } else {
             GuessResult.MISS
