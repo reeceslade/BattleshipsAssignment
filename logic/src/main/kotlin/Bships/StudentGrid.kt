@@ -18,6 +18,7 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     private val cells = MutableMatrix<GuessCell>(columns, rows, GuessCell.UNSET)//what does guesscell unset do
     // do i need this ?? override val ships: List<Ship> get() = opponent.ships
 
+    //player turn?
 
     override fun get(column: Int, row: Int): GuessCell {
         require(column < 0 || column >= columns || row < 0 || row >= rows) {
@@ -31,6 +32,7 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     }
 
     override fun shootAt(column: Int, row: Int): GuessResult {
+
         require(column < 0 || column >= columns || row < 0 || row >= rows) {
         ("Invalid coordinates: ($column, $row)")
         }

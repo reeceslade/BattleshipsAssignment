@@ -1,25 +1,16 @@
 package Bships
 
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
-import uk.ac.bournemouth.ap.battleshiplib.GuessCell
-import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
-//opponent ship placement
-//19 mins video
-//want the ship and the index
-//determine whether ship was sunk
-//ship.All
+
 class StudentBattleshipOpponent(
     override val columns: Int,
     override val rows: Int,
     override val ships: List<Ship>
 
 ) : BattleshipOpponent {
-    //ship.All If all ship coordinates are hit == sunk else false
-    data class ShipInfo<out S : Ship>(val index: Int, val ship: S)
 
-    // Helper function that determines whether a ship covers a given coordinate
     private fun Ship.coversCoordinate(coord: Coordinate): Boolean {
         return coord.x in left..right && coord.y in top..bottom
     }
@@ -33,25 +24,39 @@ class StudentBattleshipOpponent(
         }
         return null
     }
-
-    //fun BattleshipOpponent.shipAt(coordinate: Coordinate): BattleshipOpponent.ShipInfo<Ship>? =
-    // shipAt(coordinate.x, coordinate.y)
-
-    override fun shootAt(column: Int, row: Int): Int {
+ /* override fun shootAt(column: Int, row: Int): Int {
         val shipInfo = shipAt(column, row)
-        return if (shipInfo != null) {
-            // A ship was hit
-            shipInfo.ship.hit(Coordinate(column, row))
-            if (shipInfo.ship.isSunk()) {
-                // The ship was sunk
-                BattleshipOpponent.SUNK
-            } else {
-                // The ship was hit but not sunk
-                BattleshipOpponent.HIT
+        if (shipInfo != null) {
+            val ship = shipInfo.ship
+            val result = ship.shootAt(column, row)
+            return when (result) {
+                is GuessResult.HIT -> shipInfo.index + 1
+                is GuessResult.SUNK -> -(shipInfo.index + 1)
+                else -> throw IllegalStateException("Unexpected result $result")
             }
+        }
+        return 0
+    }
+} */
+
+override fun shootAt(column: Int, row: Int): Int {
+    val shipInfo = shipAt(column, row)
+    if (shipInfo != null) {
+        val ship = shipInfo.ship as StudentShip // Cast the ship to your StudentShip class
+        val result = (ships.indices as Array<Pair<Int, Int>>).flatMap { (x, y) ->
+            if (x == column && y == row) {
+                listOf(ship.isSunk())
+            } else {
+                listOf()
+            }
+        }.firstOrNull()
+
+        return if (result == true) {
+            -(shipInfo.index + 1)
         } else {
-            // The shot missed
-            BattleshipOpponent.MISSED
+            shipInfo.index + 1
         }
     }
+    return 0
+}
 }

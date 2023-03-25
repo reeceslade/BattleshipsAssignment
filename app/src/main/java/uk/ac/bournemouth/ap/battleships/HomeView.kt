@@ -87,10 +87,10 @@ class HomeView: View {
 
                 for (col in 0 until colCount) {
                     // We will later on want to use the game data to determine this
-                    val paint = when (game.get(1, 4)) {
+                    val paint = when (game[col, row]) {
                         1 -> player1Paint
                         2 -> player2Paint
-                        else -> null
+                        else -> noPlayerPaint
                     }
 
                     // Drawing circles uses the center and radius
@@ -100,7 +100,13 @@ class HomeView: View {
                     val rectTop = cy - radius
                     val rectRight = cx + radius
                     val rectBottom = cy + radius
-                    canvas?.drawRect(rectLeft, rectTop, rectRight, rectBottom, paint)
+                    if (paint != null) {
+                        paint?.let {
+                            canvas?.drawRect(rectLeft, rectTop, rectRight, rectBottom,
+                                it
+                            )
+                        }
+                    }
 
                 }
             }
@@ -128,8 +134,10 @@ class HomeView: View {
             override fun onSingleTapUp(e: MotionEvent): Boolean {
                 val columnTouched =
                     ((e.x - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
-                if (columnTouched in 0 until game.columns) {
-                    val isValidMove = game.shipAt(columnTouched,  game.playerTurn)
+                val rowTouched =
+                    ((e.y - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
+                if (columnTouched in 0 until game.columns && rowTouched in 0 until game.rows) {
+                    val isValidMove = game.shootAt(columnTouched, rowTouched)
                     invalidate()
                     if (isValidMove) {
                         // Handle valid move
@@ -152,5 +160,3 @@ class HomeView: View {
             return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
         }
     }
-
-}
