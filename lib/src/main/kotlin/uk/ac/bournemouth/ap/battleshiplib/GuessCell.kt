@@ -1,5 +1,5 @@
 package uk.ac.bournemouth.ap.battleshiplib
-
+//unset bc nothing has been set yet
 sealed class GuessCell {
     object UNSET : GuessCell() {
         override fun toByte(): Byte = -128
@@ -28,9 +28,9 @@ sealed class GuessCell {
         override fun toByte(): Byte = (-1 - shipIndex).toByte()
 
     }
-
     abstract fun toByte(): Byte
-
+    //store game save game save instances, this helps me store matrix
+    //fromByte reads function
     companion object {
         fun fromByte(byte: Byte): GuessCell = when (byte.toInt()) {
             -128 -> UNSET

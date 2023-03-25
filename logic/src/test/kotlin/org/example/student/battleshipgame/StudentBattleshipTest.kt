@@ -7,12 +7,12 @@ import uk.ac.bournemouth.ap.battleshiplib.*
 import uk.ac.bournemouth.ap.battleshiplib.test.BattleshipTest
 import uk.ac.bournemouth.ap.lib.matrix.boolean.BooleanMatrix
 import kotlin.random.Random
-
+//create own test
 class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     override fun createOpponent(
         columns: Int,
         rows: Int,
-        ships: List<StudentShip>
+        ships: List<StudentShip>//opponent ship?
     ): StudentBattleshipOpponent {
         return TODO("Create an instance of StudentBattleshipOpponent with the dimensions and ships")
     }
@@ -25,7 +25,7 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
         columns: Int,
         rows: Int,
         shipSizes: IntArray,
-        random: Random
+        random: Random//use this parameter Object Random repeated
     ): StudentBattleshipOpponent {
         // Note that the passing of random allows for repeatable testing
         return TODO("Create an instance of StudentBattleshipOpponent for the given game size, " +

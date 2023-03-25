@@ -4,7 +4,8 @@ import uk.ac.bournemouth.ap.lib.matrix.int.IntMatrix
 import uk.ac.bournemouth.ap.lib.matrix.Matrix
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
-
+//assumes shapes are rectangular
+//dont have to use these
 interface Ship {
     fun isSunk(): Boolean
 
@@ -23,10 +24,12 @@ interface Ship {
     val bottomRight: Coordinate get() = Coordinate(bottom, right)
 }
 
+//gets index for all positioned ships
+//swapped y for x
 inline fun Ship.forEachIndex(action: (Int, Int) -> Unit) {
     for (x in columnIndices) {
-        for (y in rowIndices) {
-            action(x, y)
+    for (y in rowIndices) {
+            action(x,y)
         }
     }
 }

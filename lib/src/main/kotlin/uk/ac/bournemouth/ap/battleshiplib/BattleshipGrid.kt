@@ -7,6 +7,8 @@ interface BattleshipGrid {
     val columns: Int
     val rows: Int
     val opponent: BattleshipOpponent
+    //need opponent to shoot at
+    //shoot at coord, opponent says MISS or HIT
 
     @Deprecated("Not needed", ReplaceWith("opponent.ships"))
     val ships: List<Ship> get() = opponent.ships
@@ -20,6 +22,7 @@ interface BattleshipGrid {
     val shipsSunk: BooleanArray
 
     val isFinished: Boolean get() = shipsSunk.all { it }
+    //if isFinished ignore touches
 
     /** Get the cell at the given coordinates. */
     operator fun get(column: Int, row: Int):GuessCell
@@ -43,12 +46,15 @@ interface BattleshipGrid {
         .flatMap { y->
             (0 until columns).asSequence().map { x-> Coordinate(x,y) }
         }
+    //gets all coordinates
 
     /**
      * Register a listener for game changes
      *
      * @param listener The listener to register.
      */
+
+    //exercise 6
     fun addOnGridChangeListener(listener: BattleshipGridListener)
 
     /**

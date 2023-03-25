@@ -2,7 +2,7 @@ package Bships
 
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 
-abstract class StudentShip(
+class StudentShip(
     override val top: Int,
     override val left: Int,
     override val bottom: Int,

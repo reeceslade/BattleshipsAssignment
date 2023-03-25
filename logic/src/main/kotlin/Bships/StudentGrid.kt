@@ -20,12 +20,9 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
 
 
     override fun get(column: Int, row: Int): GuessCell {
-        // Check if the given coordinates are valid
-        if (column < 0 || column >= columns || row < 0 || row >= rows) {
-            throw IllegalArgumentException("Invalid coordinates: ($column, $row)")
-            // return GuessResult.INVALID
+        require(column < 0 || column >= columns || row < 0 || row >= rows) {
+           "Invalid coordinates: ($column, $row)"
         }
-        // Otherwise return the cell at the given coordinates
         return cells[column, row]
     }
 
@@ -34,22 +31,14 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     }
 
     override fun shootAt(column: Int, row: Int): GuessResult {
-        // Check if the given coordinates are valid
-        if (column < 0 || column >= columns || row < 0 || row >= rows) {
-            //return GuessResult.INVALID
-            throw IllegalArgumentException("Invalid coordinates: ($column, $row)")
+        require(column < 0 || column >= columns || row < 0 || row >= rows) {
+        ("Invalid coordinates: ($column, $row)")
         }
-        // Check if the cell at the given coordinates has already been guessed
-        //else if????
-        if (cells[column, row] != GuessCell.UNSET) {
-            //  return GuessResult.INVALID
-            throw IllegalArgumentException("already been guessed?")
+        require(cells[column, row] != GuessCell.UNSET) {
+            "already been guessed?"
         }
-        // Update the cell at the given coordinates to reflect the result of the guess
         val shipIndex = opponent.shootAt(column, row)
-        cells[column, row] = if (shipIndex >= 0) GuessCell.HIT(shipIndex) else GuessCell.MISS
-        // Return the appropriate GuessResult based on the result of the guess
-        return if (shipIndex >= 0) {
+        cells[column, row] = if (shipIndex >= 0) GuessCell.HIT(shipIndex) else GuessCell.MISS        return if (shipIndex >= 0) {
             if (opponent.ships[shipIndex].isSunk()) GuessResult.SUNK(shipIndex) else GuessResult.HIT(shipIndex)
         } else {
             GuessResult.MISS
@@ -57,6 +46,7 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     }
 
     override fun shootAt(coordinate: Coordinate): GuessResult{
+        fireGridChange()
         return shootAt(coordinate.x, coordinate.y)
     }
 //ik it overrides the function but why are we using x and y instead of row and colu,m
@@ -66,7 +56,7 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     override fun addOnGridChangeListener(listener: BattleshipGrid.BattleshipGridListener) {
        if(listener !in gameChangeListeners){
            gameChangeListeners.add(listener)
-       }//else remove OnGridChangeListener?
+       }
     }
 
     override fun removeOnGridChangeListener(listener: BattleshipGrid.BattleshipGridListener) {
