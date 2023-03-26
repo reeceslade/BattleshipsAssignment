@@ -2,8 +2,6 @@ package Bships
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
-import Bships.StudentShip
-import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 
 
 class StudentBattleshipOpponent(
@@ -26,6 +24,33 @@ class StudentBattleshipOpponent(
         }
         return null
     }
+
+    private fun StudentShip.positions(): Set<Coordinate> {
+        val positions = mutableSetOf<Coordinate>()
+        for (x in left..right) {
+            for (y in top..bottom) {
+                positions.add(Coordinate(x, y))
+            }
+        }
+        return positions
+    }
+
+    override fun shootAt(column: Int, row: Int): Int {
+        val shipInfo = shipAt(column, row)
+        if (shipInfo != null) {
+            val ship = shipInfo.ship
+            if (ship is StudentShip) {
+                val result = ship.positions().contains(Coordinate(column, row))
+                return if (result) {
+                    -(shipInfo.index + 1)
+                } else {
+                    shipInfo.index + 1
+                }
+            }
+        }
+        return 0
+    }
+}
  /* override fun shootAt(column: Int, row: Int): Int {
         val shipInfo = shipAt(column, row)
         if (shipInfo != null) {
@@ -40,7 +65,7 @@ class StudentBattleshipOpponent(
         return 0
     }
 } */
- override fun shootAt(column: Int, row: Int): Int {
+ /*override fun shootAt(column: Int, row: Int): Int {
      val shipInfo = shipAt(column, row)
      if (shipInfo != null) {
          val ship = shipInfo.ship
@@ -61,7 +86,7 @@ class StudentBattleshipOpponent(
          }
      }
      return 0
- }
+ } */
 /*
  override fun shootAt(column: Int, row: Int): Int {
      val shipInfo = shipAt(column, row)
@@ -88,4 +113,3 @@ class StudentBattleshipOpponent(
  }
  */
 
-}
