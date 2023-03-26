@@ -1,8 +1,10 @@
 package Bships
-
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
+import Bships.StudentShip
+import uk.ac.bournemouth.ap.battleshiplib.GuessResult
+
 
 class StudentBattleshipOpponent(
     override val columns: Int,
@@ -38,25 +40,52 @@ class StudentBattleshipOpponent(
         return 0
     }
 } */
+ override fun shootAt(column: Int, row: Int): Int {
+     val shipInfo = shipAt(column, row)
+     if (shipInfo != null) {
+         val ship = shipInfo.ship
+         if (ship is StudentShip) {
+             val result = (ships.indices as Array<Pair<Int, Int>>).flatMap { (x, y) ->
+                 if (x == column && y == row) {
+                     listOf(ship.isSunk())
+                 } else {
+                     listOf()
+                 }
+             }.firstOrNull()
 
-override fun shootAt(column: Int, row: Int): Int {
-    val shipInfo = shipAt(column, row)
-    if (shipInfo != null) {
-        val ship = shipInfo.ship as StudentShip // Cast the ship to your StudentShip class
-        val result = (ships.indices as Array<Pair<Int, Int>>).flatMap { (x, y) ->
-            if (x == column && y == row) {
-                listOf(ship.isSunk())
-            } else {
-                listOf()
-            }
-        }.firstOrNull()
+             return if (result == true) {
+                 -(shipInfo.index + 1)
+             } else {
+                 shipInfo.index + 1
+             }
+         }
+     }
+     return 0
+ }
+/*
+ override fun shootAt(column: Int, row: Int): Int {
+     val shipInfo = shipAt(column, row)
+     if (shipInfo != null) {
+         val ship = shipInfo.ship
+         if (ship is StudentShip) {
+             val hitCoordinates = ship.hits.map { it.x to it.y }
+             if (hitCoordinates.contains(column to row)) {
+                 return if (ship.isSunk()) {
+                     -(shipInfo.index + 1)
+                 } else {
+                     shipInfo.index + 1
+                 }
+             }
+         } else {
+             return when (val result = ship.shootAt(column, row)) {
+                 is GuessResult.HIT -> shipInfo.index + 1
+                 is GuessResult.SUNK -> -(shipInfo.index + 1)
+                 else -> throw IllegalStateException("Unexpected result $result")
+             }
+         }
+     }
+     return 0
+ }
+ */
 
-        return if (result == true) {
-            -(shipInfo.index + 1)
-        } else {
-            shipInfo.index + 1
-        }
-    }
-    return 0
-}
 }
