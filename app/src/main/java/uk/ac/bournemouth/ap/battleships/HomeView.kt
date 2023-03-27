@@ -14,9 +14,8 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
-import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
-import uk.ac.bournemouth.ap.battleshiplib.Ship
-import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
+import uk.ac.bournemouth.ap.battleshiplib.GuessCell
+import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 
 class HomeView: View {
     constructor(context: Context?) : super(context)
@@ -88,8 +87,8 @@ class HomeView: View {
                 for (col in 0 until colCount) {
                     // We will later on want to use the game data to determine this
                     val paint = when (game[col, row]) {
-                        1 -> player1Paint
-                        2 -> player2Paint
+                     //   GuessCell.HIT -> player1Paint
+                       // GuessCell.SUNK -> player2Paint
                         else -> noPlayerPaint
                     }
 
@@ -100,63 +99,83 @@ class HomeView: View {
                     val rectTop = cy - radius
                     val rectRight = cx + radius
                     val rectBottom = cy + radius
-                    if (paint != null) {
-                        paint?.let {
-                            canvas?.drawRect(rectLeft, rectTop, rectRight, rectBottom,
-                                it
-                            )
-                        }
+                    paint?.let {
+                        canvas?.drawRect(rectLeft, rectTop, rectRight, rectBottom,
+                            it
+                        )
                     }
 
                 }
             }
         }
 
-        private val gestureDetector = GestureDetectorCompat(context, object :
-            GestureDetector.SimpleOnGestureListener() {
+    private val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
 
-            override fun onDown(e: MotionEvent): Boolean {
-                val x = e.x
-                val y = e.y
-                val isWithinBounds = x >= paddingLeft &&
-                        x < width - paddingRight &&
-                        y >= paddingTop &&
-                        y < height - paddingBottom
-                if (!isWithinBounds) {
-                    val message = "Invalid move!"
+        override fun onDown(e: MotionEvent): Boolean {
+            val x = e.x
+            val y = e.y
+            val isWithinBounds = x >= paddingLeft &&
+                    x < width - paddingRight &&
+                    y >= paddingTop &&
+                    y < height - paddingBottom
+            if (!isWithinBounds) {
+                val message = "Invalid move!"
+                val duration = Snackbar.LENGTH_SHORT
+                val snackbar = Snackbar.make(this@HomeView, message, duration)
+                snackbar.show()
+            }
+            return isWithinBounds
+        }
+
+        private fun handleGuessResult(guessResult: GuessResult) {
+            when (guessResult) {
+                is GuessResult.HIT -> {
+                    val message = "HIT!"
                     val duration = Snackbar.LENGTH_SHORT
                     val snackbar = Snackbar.make(this@HomeView, message, duration)
                     snackbar.show()
                 }
-                return isWithinBounds
-            }
-
-            override fun onSingleTapUp(e: MotionEvent): Boolean {
-                val columnTouched =
-                    ((e.x - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
-                val rowTouched =
-                    ((e.y - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
-                if (columnTouched in 0 until game.columns && rowTouched in 0 until game.rows) {
-                    val isValidMove = game.shootAt(columnTouched, rowTouched)
-                    invalidate()
-                    if (isValidMove) {
-                        // Handle valid move
-                        return true
-                    } else {
-                        // Show Snackbar message for invalid move
-                        val message = "Invalid move!"
-                        val duration = Snackbar.LENGTH_SHORT
-                        val snackbar = Snackbar.make(this@HomeView, message, duration)
-                        snackbar.show()
-                        return false
-                    }
-                } else {
-                    return false
+                is GuessResult.SUNK -> {
+                    val message = "SUNK!"
+                    val duration = Snackbar.LENGTH_SHORT
+                    val snackbar = Snackbar.make(this@HomeView, message, duration)
+                    snackbar.show()
+                }
+                GuessResult.MISS -> {
+                    val message = "MISS!"
+                    val duration = Snackbar.LENGTH_SHORT
+                    val snackbar = Snackbar.make(this@HomeView, message, duration)
+                    snackbar.show()
                 }
             }
-        })
-
-        override fun onTouchEvent(event: MotionEvent): Boolean {
-            return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
         }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            val columnTouched = ((e.x - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
+            val rowTouched = ((e.y - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
+            if (columnTouched in 0 until game.columns && rowTouched in 0 until game.rows) {
+                val guessCell = game[columnTouched, rowTouched]
+                val hit = guessCell is GuessCell.HIT
+
+                val guessResult = if (hit) {
+                    val hitShip = game.opponent.ships.find { ship ->
+                        (columnTouched in ship.left..ship.right) && (rowTouched in ship.top..ship.bottom)
+                    }
+                    if (hitShip != null) GuessResult.HIT(game.opponent.ships.indexOf(hitShip)) else GuessResult.MISS
+                } else {
+                    GuessResult.MISS
+                }
+                game.shootAt(columnTouched, rowTouched)
+                invalidate()
+                handleGuessResult(guessResult)
+                return true
+            }
+            return false
+        }
+    })
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
     }
+
+}
