@@ -4,6 +4,7 @@ package uk.ac.bournemouth.ap.battleships
 
 import Bships.StudentBattleshipOpponent
 import Bships.StudentGrid
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -174,8 +175,8 @@ class HomeView: View {
         }
     })
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
     }
-
 }
