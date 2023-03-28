@@ -7,8 +7,6 @@ import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
 //assumes shapes are rectangular
 //dont have to use these
 interface Ship {
-    fun isSunk(): Boolean
-
     val top: Int
     val left: Int
     val bottom: Int

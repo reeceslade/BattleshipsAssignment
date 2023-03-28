@@ -8,11 +8,4 @@ class StudentShip(
     override val left: Int,
     override val bottom: Int,
     override val right: Int
-) : Ship {
-    private val hits = mutableSetOf<Coordinate>()
-    //determines whether ship has been sunk or not
-
-    override fun isSunk(): Boolean {
-        return hits.size == size
-    }
-}
+) : Ship
