@@ -18,7 +18,6 @@ import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
-import kotlin.math.sqrt
 
 class HomeView: View {
     constructor(context: Context?) : super(context)
@@ -52,7 +51,7 @@ class HomeView: View {
         private var circleSpacingRatio: Float = 0.2f
 
         private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
+            style = Paint.Style.STROKE
             color = Color.BLUE
         }
        private val noPlayerPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -74,11 +73,13 @@ class HomeView: View {
             val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
             circleDiameter = minOf(diameterX, diameterY)
             circleSpacing = circleDiameter * circleSpacingRatio
+            gridPaint.strokeWidth = circleSpacing
+            xPaint.strokeWidth = circleSpacing/2f
         }
 
         private fun recalculateDimensions(w: Int = width, h: Int = height) {}
 
-        override fun onDraw(canvas: Canvas?) {
+        override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
             val gridLeft: Float = 0f
             val gridTop: Float = 0f
@@ -87,39 +88,40 @@ class HomeView: View {
             val gridBottom: Float =
                 gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
             val radius = circleDiameter / 2f
-            canvas?.drawRect(gridLeft, gridTop, gridRight, gridBottom, gridPaint)
-            //draw grid
+            canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
 
+            for (col in 0..colCount) {
+                val x = gridLeft + circleSpacing/2 + (circleDiameter+circleSpacing)*col
+                canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
+            }
+            for (row in 0..rowCount) {
+                val y = gridTop + circleSpacing/2 + (circleDiameter+circleSpacing)*row
+                canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
+            }
+            //draw grid
             for (row in 0 until rowCount) {
                 val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
                 for (col in 0 until colCount) {
-                    val paint = when (game[col, row]) {
-                        GuessCell.MISS -> player1Paint
+                    when (game[col, row]) {
+                        GuessCell.MISS -> {
+                            val startX = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
+                            val startY = cy - radius
+                            val endX = startX + circleDiameter
+                            val endY = cy + radius
+                            canvas.drawLine(startX, startY, endX, endY, xPaint)
+                            canvas.drawLine(startX, endY, endX, startY, xPaint)
+                        }
                         // GuessCell.HIT -> player2Paint
-                        else -> noPlayerPaint
-                    }
-
-                    if (game[col, row] == GuessCell.MISS) {
-                        // Draw an X
-                        val startX =
-                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
-                        val startY = cy - radius
-                        val endX = startX + circleDiameter
-                        val endY = cy + radius
-                        canvas?.drawLine(startX, startY, endX, endY, xPaint)
-                        canvas?.drawLine(startX, endY, endX, startY, xPaint)
-                    } else {
-                        // Drawing circles uses the center and radius
-                        val cx =
-                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
-                        val rectLeft = cx - radius
-                        val rectTop = cy - radius
-                        val rectRight = cx + radius
-                        val rectBottom = cy + radius
-                        paint.let {
-                            canvas?.drawRect(
+                        else -> {
+                            val cx =
+                                gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                            val rectLeft = cx - radius
+                            val rectTop = cy - radius
+                            val rectRight = cx + radius
+                            val rectBottom = cy + radius
+                            canvas.drawRect(
                                 rectLeft, rectTop, rectRight, rectBottom,
-                                it
+                                noPlayerPaint
                             )
                         }
                     }
@@ -127,7 +129,7 @@ class HomeView: View {
             }
         }
 
-            private val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
+        private val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent): Boolean {
             val x = e.x
