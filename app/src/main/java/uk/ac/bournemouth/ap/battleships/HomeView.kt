@@ -4,6 +4,7 @@ package uk.ac.bournemouth.ap.battleships
 
 import Bships.StudentBattleshipOpponent
 import Bships.StudentGrid
+import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
@@ -17,6 +18,7 @@ import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
+import kotlin.math.sqrt
 
 class HomeView: View {
     constructor(context: Context?) : super(context)
@@ -35,8 +37,15 @@ class HomeView: View {
             invalidate()
         }
 
+    var shipList: StudentShip = StudentShip(top, left, bottom, right)
+        set(value) {
+            field = value
+            // ship placement
+            recalculateDimensions()
+            invalidate()
+        }
 
-    private val colCount: Int get() = game.columns
+        private val colCount: Int get() = game.columns
         private val rowCount: Int get() = game.rows
         private var circleDiameter: Float = 0f
         private var circleSpacing: Float = 0f
@@ -46,7 +55,6 @@ class HomeView: View {
             style = Paint.Style.FILL
             color = Color.BLUE
         }
-
        private val noPlayerPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL
             color = Color.WHITE
@@ -59,7 +67,6 @@ class HomeView: View {
             style = Paint.Style.FILL
             color = Color.RED
         }
-
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
             super.onSizeChanged(w, h, oldw, oldh)
             val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
@@ -80,37 +87,47 @@ class HomeView: View {
                 gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
             val radius = circleDiameter / 2f
             canvas?.drawRect(gridLeft, gridTop, gridRight, gridBottom, gridPaint)
+            //draw grid
 
             for (row in 0 until rowCount) {
                 // The vertical center is the same for each circle in the row
                 val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
-
                 for (col in 0 until colCount) {
-                    // We will later on want to use the game data to determine this
                     val paint = when (game[col, row]) {
-                     //   GuessCell.HIT -> player1Paint
-                       // GuessCell.SUNK -> player2Paint
+                        GuessCell.MISS -> player1Paint
+                        // GuessCell.HIT -> player2Paint
                         else -> noPlayerPaint
                     }
 
-                    // Drawing circles uses the center and radius
-                    val cx =
-                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
-                    val rectLeft = cx - radius
-                    val rectTop = cy - radius
-                    val rectRight = cx + radius
-                    val rectBottom = cy + radius
-                    paint?.let {
-                        canvas?.drawRect(rectLeft, rectTop, rectRight, rectBottom,
-                            it
-                        )
+                    if (game[col, row] == GuessCell.MISS) {
+                        // Draw an X
+                        val startX =
+                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
+                        val startY = cy - radius
+                        val endX = startX + circleDiameter
+                        val endY = cy + radius
+                        canvas?.drawLine(startX, startY, endX, endY, paint)
+                        canvas?.drawLine(startX, endY, endX, startY, paint)
+                    } else {
+                        // Drawing circles uses the center and radius
+                        val cx =
+                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                        val rectLeft = cx - radius
+                        val rectTop = cy - radius
+                        val rectRight = cx + radius
+                        val rectBottom = cy + radius
+                        paint.let {
+                            canvas?.drawRect(
+                                rectLeft, rectTop, rectRight, rectBottom,
+                                it
+                            )
+                        }
                     }
-
                 }
             }
         }
 
-    private val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
+            private val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent): Boolean {
             val x = e.x
@@ -142,8 +159,8 @@ class HomeView: View {
                     val snackbar = Snackbar.make(this@HomeView, message, duration)
                     snackbar.show()
                 }
-                GuessResult.MISS -> {
-                    val message = "MISS!"
+                is GuessResult.MISS -> {
+                    val message = "Miss"
                     val duration = Snackbar.LENGTH_SHORT
                     val snackbar = Snackbar.make(this@HomeView, message, duration)
                     snackbar.show()
