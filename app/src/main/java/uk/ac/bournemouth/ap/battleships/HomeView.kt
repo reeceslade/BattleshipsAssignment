@@ -63,9 +63,10 @@ class HomeView: View {
             style = Paint.Style.FILL
             color = Color.YELLOW
         }
-        private val player2Paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
-            color = Color.RED
+        private val xPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 8f //
+            color = Color.BLACK //
         }
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
             super.onSizeChanged(w, h, oldw, oldh)
@@ -90,7 +91,6 @@ class HomeView: View {
             //draw grid
 
             for (row in 0 until rowCount) {
-                // The vertical center is the same for each circle in the row
                 val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
                 for (col in 0 until colCount) {
                     val paint = when (game[col, row]) {
@@ -106,8 +106,8 @@ class HomeView: View {
                         val startY = cy - radius
                         val endX = startX + circleDiameter
                         val endY = cy + radius
-                        canvas?.drawLine(startX, startY, endX, endY, paint)
-                        canvas?.drawLine(startX, endY, endX, startY, paint)
+                        canvas?.drawLine(startX, startY, endX, endY, xPaint)
+                        canvas?.drawLine(startX, endY, endX, startY, xPaint)
                     } else {
                         // Drawing circles uses the center and radius
                         val cx =
