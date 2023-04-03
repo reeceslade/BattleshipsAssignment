@@ -36,7 +36,7 @@ class HomeView: View {
             invalidate()
         }
 
-    var shipList: StudentShip = StudentShip(top, left, bottom, right)
+    var shipList: List<StudentShip> = emptyList()
         set(value) {
             field = value
             // ship placement
@@ -44,7 +44,8 @@ class HomeView: View {
             invalidate()
         }
 
-        private val colCount: Int get() = game.columns
+
+    private val colCount: Int get() = game.columns
         private val rowCount: Int get() = game.rows
         private var circleDiameter: Float = 0f
         private var circleSpacing: Float = 0f
@@ -79,56 +80,90 @@ class HomeView: View {
 
         private fun recalculateDimensions(w: Int = width, h: Int = height) {}
 
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            val gridLeft: Float = 0f
-            val gridTop: Float = 0f
-            val gridRight: Float =
-                gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
-            val gridBottom: Float =
-                gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
-            val radius = circleDiameter / 2f
-            canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
+        private fun getCoordinate(ship: StudentShip, index: Int): Pair<Int, Int> {
+        val row = ship.top + index / ship.size
+        val col = ship.left + index % ship.size
+        return Pair(col, row)
+    }
 
-            for (col in 0..colCount) {
-                val x = gridLeft + circleSpacing/2 + (circleDiameter+circleSpacing)*col
-                canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
+    data class Ship(
+        val size: Int,
+        var isDestroyed: Boolean = false,
+        var coordinates: List<Pair<Int, Int>> = emptyList()
+    )
+
+    private fun createShips(): List<Ship> {
+        return StudentShip.values().map { ship ->
+            val size = ship.size
+            val coordinates = mutableListOf<Pair<Int, Int>>()
+            for (i in 0 until size) {
+                when {
+                    ship.top == ship.bottom -> {
+                        coordinates.add(Pair(ship.left + i, ship.top))
+                    }
+                    ship.left == ship.right -> {
+                        coordinates.add(Pair(ship.left, ship.top + i))
+                    }
+                }
             }
-            for (row in 0..rowCount) {
-                val y = gridTop + circleSpacing/2 + (circleDiameter+circleSpacing)*row
-                canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
-            }
-            //draw grid
-            for (row in 0 until rowCount) {
-                val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
-                for (col in 0 until colCount) {
-                    when (game[col, row]) {
-                        GuessCell.MISS -> {
-                            val startX = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
-                            val startY = cy - radius
-                            val endX = startX + circleDiameter
-                            val endY = cy + radius
-                            canvas.drawLine(startX, startY, endX, endY, xPaint)
-                            canvas.drawLine(startX, endY, endX, startY, xPaint)
-                        }
-                        // GuessCell.HIT -> player2Paint
-                        else -> {
-                            val cx =
-                                gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
-                            val rectLeft = cx - radius
-                            val rectTop = cy - radius
-                            val rectRight = cx + radius
-                            val rectBottom = cy + radius
-                            canvas.drawRect(
-                                rectLeft, rectTop, rectRight, rectBottom,
-                                noPlayerPaint
-                            )
-                        }
+            Ship(size, coordinates = coordinates)
+        }
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        val gridLeft: Float = 0f
+        val gridTop: Float = 0f
+        val gridRight: Float =
+            gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
+        val gridBottom: Float =
+            gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
+        val radius = circleDiameter / 2f
+        canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
+
+        for (col in 0..colCount) {
+            val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
+            canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
+        }
+        for (row in 0..rowCount) {
+            val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
+            canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
+        }
+        //draw grid
+        for (row in 0 until rowCount) {
+            val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
+            for (col in 0 until colCount) {
+                when (game[col, row]) {
+                    GuessCell.MISS -> {
+                        val startX =
+                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
+                        val startY = cy - radius
+                        val endX = startX + circleDiameter
+                        val endY = cy + radius
+                        canvas.drawLine(startX, startY, endX, endY, xPaint)
+                        canvas.drawLine(startX, endY, endX, startY, xPaint)
+                    }
+                    // GuessCell.HIT -> player2Paint
+                    else -> {
                     }
                 }
             }
         }
+        // Add a coordinates property to the Ship class
 
+        val shipList = createShips()
+
+        // Draw ships
+        for (ship in shipList) {
+            for ((col, row) in ship.coordinates) {
+                val cx =
+                    gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                val cy =
+                    gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
+                canvas.drawCircle(cx, cy, radius, xPaint)
+            }
+        }
+    }
         private val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent): Boolean {
