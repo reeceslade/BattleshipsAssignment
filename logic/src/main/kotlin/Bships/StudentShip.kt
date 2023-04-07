@@ -24,6 +24,9 @@ import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
     override val bottomRight: Coordinate
         get() = super.bottomRight
 }
-
+val ship1 = StudentShip(0, 0, 0, 4) // creates a ship at coordinates (0,0) to (0,4)
+val ship2 = StudentShip(2, 3, 5, 3) // creates a ship at coordinates (2,3) to (5,3)
+// create more ships as needed...
+val ships = listOf(ship1, ship2)
 
 

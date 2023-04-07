@@ -11,7 +11,7 @@ class StudentGrid(override val opponent: StudentBattleshipOpponent) : Battleship
     override val rows: Int
         get() = opponent.rows
     override val shipsSunk: BooleanArray = BooleanArray(opponent.ships.size)
-    private val cells = MutableMatrix<GuessCell>(columns, rows, GuessCell.UNSET)
+    val cells = MutableMatrix<GuessCell>(columns, rows, GuessCell.UNSET)
 
     //player turn?
 

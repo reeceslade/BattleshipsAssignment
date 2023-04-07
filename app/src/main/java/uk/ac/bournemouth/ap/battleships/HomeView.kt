@@ -2,19 +2,20 @@ package uk.ac.bournemouth.ap.battleships
 import Bships.StudentBattleshipOpponent
 import Bships.StudentGrid
 import Bships.StudentShip
+import Bships.ships
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
-import uk.ac.bournemouth.ap.battleshiplib.GuessCell
-import uk.ac.bournemouth.ap.battleshiplib.GuessResult
+import uk.ac.bournemouth.ap.battleshiplib.*
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
 
 class HomeView: View {
@@ -26,25 +27,17 @@ class HomeView: View {
         defStyleAttr
     )
 
-    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10,10, emptyList()))
-        set(value) {
+    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10,10, ships))
+            set(value) {
             field = value
             // After the new value is set, make sure to recalculate sizes and then trigger a redraw
             recalculateDimensions()
             invalidate()
         }
 
-    private var shipList: List<StudentShip> = listOf(StudentShip.DESTROYER, StudentShip.SUBMARINE, StudentShip.CRUISER, StudentShip.BATTLESHIP, StudentShip.CARRIER)
-        set(value) {
-            field = value
-            // ship placement
-            recalculateDimensions()
-            invalidate()
-        }
-
-
-    private val colCount: Int get() = game.columns
+        private val colCount: Int get() = game.columns
         private val rowCount: Int get() = game.rows
+        private val shipCount: List<Ship> get() = game.opponent.ships
         private var circleDiameter: Float = 0f
         private var circleSpacing: Float = 0f
         private var circleSpacingRatio: Float = 0.2f
@@ -76,6 +69,9 @@ class HomeView: View {
         }
 
         private fun recalculateDimensions(w: Int = width, h: Int = height) {}
+
+    val gridLeft = 0f
+    val gridTop = 0f
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -121,7 +117,7 @@ class HomeView: View {
             }
         }
         // Draw ships
-        for (ship in shipList) {
+        for (ship in shipCount) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
             val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
@@ -197,6 +193,46 @@ class HomeView: View {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val col = ((event.x - circleSpacing / 2 - gridLeft) / (circleDiameter + circleSpacing)).toInt()
+            val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
+            if (col in 0 until colCount && row in 0 until rowCount) {
+                val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
+                val result : GuessResult
+                if(foundShip==null) {
+                    game.cells[col, row] = GuessCell.MISS
+                    result = GuessResult.MISS
+                    //if the coords are empty (dont have the ship and index) == MISS
+                } else {
+                    val (shipIndex, Ship) = foundShip
+                    game.cells[col, row] = GuessCell.HIT(shipIndex)
+                    var isSunk = true
+                    Ship.forEachIndex {x, y -> isSunk = isSunk && game.cells[x,y] is GuessCell.HIT}
+
+                    if(isSunk) {
+                        val state = GuessCell.SUNK(shipIndex)
+                        Ship.forEachIndex { x, y -> game.cells[x,y] = state  }
+                        shipsSunk[shipIndex] = true
+                        result = GuessResult.SUNK(shipIndex)
+                    } else {
+                        result = GuessResult.HIT(shipIndex)
+                    }
+
+                }
+                    val ship = foundShip?.ship!!
+                    val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
+                    val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
+                    val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
+                    val bottom = top + circleDiameter
+                    val shipRect = RectF(left, top, right, bottom)
+                    canvas.drawRect(shipRect, player1Paint)
+                } else {
+                    // Display a message indicating that the guess missed
+                    Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                }
+                invalidate()
+                return true
+            }
+        return false
     }
 }
