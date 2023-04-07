@@ -198,34 +198,28 @@ class HomeView: View {
             val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
             if (col in 0 until colCount && row in 0 until rowCount) {
                 val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
-                val result : GuessResult
                 if(foundShip==null) {
                     game.cells[col, row] = GuessCell.MISS
-                    result = GuessResult.MISS
+                    Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
                     //if the coords are empty (dont have the ship and index) == MISS
                 } else {
                     val (shipIndex, Ship) = foundShip
                     game.cells[col, row] = GuessCell.HIT(shipIndex)
                     var isSunk = true
                     Ship.forEachIndex {x, y -> isSunk = isSunk && game.cells[x,y] is GuessCell.HIT}
+                    Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
 
                     if(isSunk) {
                         val state = GuessCell.SUNK(shipIndex)
                         Ship.forEachIndex { x, y -> game.cells[x,y] = state  }
+                        val shipsSunk = MutableList(game.opponent.ships.size) { false }
                         shipsSunk[shipIndex] = true
-                        result = GuessResult.SUNK(shipIndex)
+                        GuessResult.SUNK(shipIndex)
                     } else {
-                        result = GuessResult.HIT(shipIndex)
+                        GuessResult.HIT(shipIndex)
                     }
 
                 }
-                    val ship = foundShip?.ship!!
-                    val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
-                    val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
-                    val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
-                    val bottom = top + circleDiameter
-                    val shipRect = RectF(left, top, right, bottom)
-                    canvas.drawRect(shipRect, player1Paint)
                 } else {
                     // Display a message indicating that the guess missed
                     Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
