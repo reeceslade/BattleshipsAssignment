@@ -3,6 +3,7 @@ package org.example.student.battleshipgame
 import Bships.StudentGrid
 import Bships.StudentBattleshipOpponent
 import Bships.StudentShip
+import Bships.ships
 import uk.ac.bournemouth.ap.battleshiplib.*
 import uk.ac.bournemouth.ap.battleshiplib.test.BattleshipTest
 import uk.ac.bournemouth.ap.lib.matrix.boolean.BooleanMatrix
@@ -28,9 +29,14 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
         random: Random//use this parameter Object Random repeated
     ): StudentBattleshipOpponent {
         // Note that the passing of random allows for repeatable testing
+   //     if (rows < 0 || rows >= 10 || columns < 0 || columns >= 10) {
+     //       throw IndexOutOfBoundsException("($rows,$columns) out of range: ([0,10), [0,3))")
+       // }
+// Access the array using the row and column indices
 
-        return TODO("Create an instance of StudentBattleshipOpponent for the given game size, " +
-                "target ship sizes and random generator")
+        val shipSizesList = shipSizes.toList()
+        val ships = shipSizesList.map { size -> StudentShip(0, 0, size - 1, 0) }
+        return StudentBattleshipOpponent(columns, rows, ships)
     }
 
     override fun createGrid(
