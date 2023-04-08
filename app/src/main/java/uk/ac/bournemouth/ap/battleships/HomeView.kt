@@ -27,102 +27,115 @@ class HomeView: View {
         defStyleAttr
     )
 
-    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10,10, ships))
-            set(value) {
+    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10, 10, ships))
+        set(value) {
             field = value
             // After the new value is set, make sure to recalculate sizes and then trigger a redraw
             recalculateDimensions()
             invalidate()
         }
 
-        private val colCount: Int get() = game.columns
-        private val rowCount: Int get() = game.rows
-        private val shipCount: List<Ship> get() = game.opponent.ships
-        private var circleDiameter: Float = 0f
-        private var circleSpacing: Float = 0f
-        private var circleSpacingRatio: Float = 0.2f
+    private val colCount: Int get() = game.columns
+    private val rowCount: Int get() = game.rows
+    private val shipCount: List<Ship> get() = game.opponent.ships
+    private var circleDiameter: Float = 0f
+    private var circleSpacing: Float = 0f
+    private var circleSpacingRatio: Float = 0.2f
 
-        private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.STROKE
-            color = Color.BLUE
-        }
-       private val noPlayerPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
-            color = Color.WHITE
-        }
-        private val player1Paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
-            color = Color.YELLOW
-        }
-        private val xPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
-            color = Color.BLACK
-        }
-        override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-            super.onSizeChanged(w, h, oldw, oldh)
-            val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
-            val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
-            circleDiameter = minOf(diameterX, diameterY)
-            circleSpacing = circleDiameter * circleSpacingRatio
-            gridPaint.strokeWidth = circleSpacing
-            xPaint.strokeWidth = circleSpacing/2f
-        }
+    private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.BLUE
+    }
+    private val noPlayerPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.WHITE
+    }
+    private val player1Paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.RED
+    }
+    private val xPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.BLACK
+    }
 
-        private fun recalculateDimensions(w: Int = width, h: Int = height) {}
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
+        val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
+        circleDiameter = minOf(diameterX, diameterY)
+        circleSpacing = circleDiameter * circleSpacingRatio
+        gridPaint.strokeWidth = circleSpacing
+        xPaint.strokeWidth = circleSpacing / 2f
+    }
+
+    private fun recalculateDimensions(w: Int = width, h: Int = height) {}
 
     val gridLeft = 0f
     val gridTop = 0f
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        // Define grid boundaries and radius
         val gridLeft = 0f
         val gridTop = 0f
         val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
         val gridBottom = gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
         val radius = circleDiameter / 2f
-
-        // Draw empty grid
         canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
-
-        // Draw horizontal lines
         for (row in 0..rowCount) {
             val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
             canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
         }
-
-        // Draw vertical lines
         for (col in 0..colCount) {
             val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
+        //GRID
+        for (ship in ships) {
+            //for ship in shipcount for opponent atm getting my ships
+            val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
+            val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
+            val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
+            val bottom = top + circleDiameter
+            canvas.drawRect(left, top, right, bottom, xPaint)
+        } //SHIPS
 
-        // Draw missed cells
+        // MISSED CELLS
         for (row in 0 until rowCount) {
             val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
             for (col in 0 until colCount) {
                 when (game[col, row]) {
                     GuessCell.MISS -> {
-                        val startX = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
+                        val startX =
+                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col)
                         val startY = cy - radius
                         val endX = startX + circleDiameter
                         val endY = cy + radius
                         canvas.drawLine(startX, startY, endX, endY, xPaint)
                         canvas.drawLine(startX, endY, endX, startY, xPaint)
                     }
-                    // GuessCell.HIT -> player2Paint
+                    is GuessCell.HIT -> {
+                        val cx =
+                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                        val cy =
+                            gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
+                        canvas.drawCircle(cx, cy, radius, player1Paint)
+                    }
+                    is GuessCell.SUNK -> {
+                        val cx =
+                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                        val cy =
+                            gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
+                        canvas.drawCircle(cx, cy, radius, player1Paint)
+                        val startX = cx - radius
+                        val startY = cy
+                        val endX = cx + radius
+                        val endY = cy
+                        canvas.drawLine(startX, startY, endX, endY, xPaint)
+                    }
                     else -> {}
                 }
             }
-        }
-        // Draw ships
-        for (ship in shipCount) {
-            val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
-            val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
-            val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
-            val bottom = top + circleDiameter
-            canvas.drawRect(left, top, right, bottom, xPaint)
         }
     }
 
@@ -215,14 +228,17 @@ class HomeView: View {
                         val shipsSunk = MutableList(game.opponent.ships.size) { false }
                         shipsSunk[shipIndex] = true
                         GuessResult.SUNK(shipIndex)
+                        Snackbar.make(this, "Ship sunkk", Snackbar.LENGTH_SHORT).show()
                     } else {
                         GuessResult.HIT(shipIndex)
+
+                        Snackbar.make(this, "Ship hitt", Snackbar.LENGTH_SHORT).show()
                     }
 
                 }
                 } else {
                     // Display a message indicating that the guess missed
-                    Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(this, "Ship missedddd", Snackbar.LENGTH_SHORT).show()
                 }
                 invalidate()
                 return true
