@@ -13,7 +13,7 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     override fun createOpponent(
         columns: Int,
         rows: Int,
-        ships: List<StudentShip>//opponent ship?
+        ships: List<StudentShip>
     ): StudentBattleshipOpponent {
         return StudentBattleshipOpponent(columns, rows, ships)
     }
@@ -26,16 +26,23 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
         columns: Int,
         rows: Int,
         shipSizes: IntArray,
-        random: Random//use this parameter Object Random repeated
+        random: Random
     ): StudentBattleshipOpponent {
-        // Note that the passing of random allows for repeatable testing
-   //     if (rows < 0 || rows >= 10 || columns < 0 || columns >= 10) {
-     //       throw IndexOutOfBoundsException("($rows,$columns) out of range: ([0,10), [0,3))")
-       // }
-// Access the array using the row and column indices
+        val maxShipSize = shipSizes.maxOrNull() ?: 0
+        require(rows >= maxShipSize) { "The number of rows must be greater than or equal to the maximum ship size" }
 
-        val shipSizesList = shipSizes.toList()
-        val ships = shipSizesList.map { size -> StudentShip(0, 0, size - 1, 0) }
+        val ships = mutableListOf<StudentShip>()
+        for (size in shipSizes) {
+            var ship: StudentShip
+            do {
+                val top = random.nextInt(rows - size + 1)
+                val left = random.nextInt(columns)
+                val bottom = top + size - 1
+                val right = left
+                ship = StudentShip(top, left, bottom, right)
+            } while (ships.any { it.overlaps(ship) } || bottom > rows - 1)
+            ships.add(ship)
+        }
         return StudentBattleshipOpponent(columns, rows, ships)
     }
 
