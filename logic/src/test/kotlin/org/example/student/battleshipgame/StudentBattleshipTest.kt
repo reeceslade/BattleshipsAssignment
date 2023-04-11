@@ -30,8 +30,10 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     ): StudentBattleshipOpponent {
         val maxShipSize = shipSizes.maxOrNull() ?: 0
         require(rows >= maxShipSize) { "The number of rows must be greater than or equal to the maximum ship size" }
+      //  require(columns >= maxShipSize) { "The number of columns must be greater than or equal to the maximum ship size" }
 
         val ships = mutableListOf<StudentShip>()
+        // val ships = mutableListOf(carrier, battleship, cruiser, submarine, destroyer)
         for (size in shipSizes) {
             var ship: StudentShip
             do {
