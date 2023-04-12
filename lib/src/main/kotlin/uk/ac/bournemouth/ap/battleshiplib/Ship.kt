@@ -21,7 +21,6 @@ interface Ship {
     val topLeft: Coordinate get() = Coordinate(top, left)
     val bottomRight: Coordinate get() = Coordinate(bottom, right)
 }
-
 //gets index for all positioned ships
 //swapped y for x
 inline fun Ship.forEachIndex(action: (Int, Int) -> Unit) {

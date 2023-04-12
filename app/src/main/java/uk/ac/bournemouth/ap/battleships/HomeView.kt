@@ -91,7 +91,7 @@ class HomeView: View {
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
         //GRID
-        for (ship in ships) {
+        for (ship in shipCount) {
             //for ship in shipcount for opponent atm getting my ships
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)

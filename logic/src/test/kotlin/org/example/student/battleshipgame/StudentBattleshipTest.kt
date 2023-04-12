@@ -28,22 +28,27 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
         shipSizes: IntArray,
         random: Random
     ): StudentBattleshipOpponent {
-        val maxShipSize = shipSizes.maxOrNull() ?: 0
         val ships = mutableListOf<StudentShip>()
-        // val ships = mutableListOf(carrier, battleship, cruiser, submarine, destroyer)
         for (size in shipSizes) {
             var ship: StudentShip
+            var r: Int
             do {
+                r = random.nextInt(0, columns) // generate a random column index
                 val top = random.nextInt(rows - size + 1)
-                val left = random.nextInt(columns)
+                val left = r
                 val bottom = top + size - 1
                 val right = left
                 ship = StudentShip(top, left, bottom, right)
-            } while (ships.any { it.overlaps(ship) } || bottom > rows - 1)
+            } while (ships.any { it.overlaps(ship) } || ship.bottom >= rows || ship.top < 0 || ship.left < 0 || ship.right >= columns)
             ships.add(ship)
         }
         return StudentBattleshipOpponent(columns, rows, ships)
     }
+
+
+
+
+
 
     override fun createGrid(
         grid: BooleanMatrix,
