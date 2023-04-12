@@ -33,7 +33,7 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
             var ship: StudentShip
             var r: Int
             do {
-                r = random.nextInt(0, columns) // generate a random column index
+                r = random.nextInt(0, columns) -1 // generate a random column index
                 val top = random.nextInt(rows - size + 1)
                 val left = r
                 val bottom = top + size - 1
