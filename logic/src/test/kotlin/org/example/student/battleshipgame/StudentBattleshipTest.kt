@@ -30,7 +30,7 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     ): StudentBattleshipOpponent {
         val ships = mutableListOf<StudentShip>()
         for (size in shipSizes) {
-            var ship: StudentShip
+            lateinit var ship: StudentShip
             var r: Int
             do {
                 r = random.nextInt(0, columns) -1 // generate a random column index
