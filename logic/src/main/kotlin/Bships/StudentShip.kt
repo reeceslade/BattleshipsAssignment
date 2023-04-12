@@ -9,21 +9,6 @@ import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
     override val bottom: Int,
     override val right: Int
 ) : Ship {
-     override val columnIndices: IntRange
-         get() = super.columnIndices
-     override val rowIndices: IntRange
-         get() = super.rowIndices
-     override val width: Int
-         get() = super.width
-     override val height: Int
-         get() = super.height
-     override val size: Int
-         get() = super.size
-     override val topLeft: Coordinate
-         get() = super.topLeft
-     override val bottomRight: Coordinate
-         get() = super.bottomRight
-
      fun overlaps(other: StudentShip): Boolean {
          val leftOverlap = (left..right).intersect(other.left..other.right).count()
          val topOverlap = (top..bottom).intersect(other.top..other.bottom).count()
