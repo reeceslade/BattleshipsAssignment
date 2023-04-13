@@ -30,20 +30,37 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     ): StudentBattleshipOpponent {
         val ships = mutableListOf<StudentShip>()
         for (size in shipSizes) {
-            lateinit var ship: StudentShip
-            var r: Int
-            do {
-                r = random.nextInt(0, columns) -1 // generate a random column index
-                val top = random.nextInt(rows - size + 1)
-                val left = r
-                val bottom = top + size - 1
-                val right = left
+            var isVertical: Boolean
+            var ship = StudentShip(0, 0, 0, 0) // initialize with default values
+            var isValidPlacement = false
+            while (!isValidPlacement) {
+                isVertical = random.nextBoolean()
+                val left = random.nextInt(columns)
+                val top = random.nextInt(rows)
+                val bottom = if (isVertical) top + size - 1 else top
+                val right = if (isVertical) left else left + size - 1
                 ship = StudentShip(top, left, bottom, right)
-            } while (ships.any { it.overlaps(ship) } || ship.bottom >= rows || ship.top < 0 || ship.left < 0 || ship.right >= columns)
+                isValidPlacement = !ships.any { it.overlaps(ship) } &&
+                        ship.top >= 0 && ship.bottom < rows && ship.left >= 0 && ship.right < columns
+                if (isVertical && !isValidPlacement && size == 5 && rows >= size) {
+                    // Try placing horizontally instead
+                    val tempBottom = top
+                    val tempRight = left + size - 1
+                    val tempShip = StudentShip(top, left, tempBottom, tempRight)
+                    isValidPlacement = !ships.any { it.overlaps(tempShip) } &&
+                            tempShip.top >= 0 && tempShip.bottom < rows && tempShip.left >= 0 && tempShip.right < columns
+                    if (isValidPlacement) {
+                        ship = tempShip
+                    }
+                }
+            }
             ships.add(ship)
         }
         return StudentBattleshipOpponent(columns, rows, ships)
     }
+
+
+
 
 
 
