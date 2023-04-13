@@ -90,14 +90,15 @@ class HomeView: View {
             val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
+
+
         //GRID
         for (ship in shipCount) {
-            //for ship in shipcount for opponent atm getting my ships
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
             val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
             val bottom = top + circleDiameter
-            canvas.drawRect(left, top, right, bottom, xPaint)
+            canvas.drawRect(top, left, bottom, right, xPaint)
         } //SHIPS
 
         // MISSED CELLS
