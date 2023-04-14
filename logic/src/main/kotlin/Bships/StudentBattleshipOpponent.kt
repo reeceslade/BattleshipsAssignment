@@ -12,25 +12,37 @@ class StudentBattleshipOpponent(
 
 ) : BattleshipOpponent {
     //need to check every ship
+    init {
+        checkShips(ships, columns, rows)
+    }
+
+    private fun checkShips(ships: List<Ship>, columns: Int, rows: Int) {
+        ships.forEach { ship ->
+            require(ship.top in 0 until rows) {
+                throw IllegalArgumentException("Ship $ship is not in bounds")
+            }
+            require(ship.bottom in 0 until rows) {
+                throw IllegalArgumentException("Ship $ship is not in bounds")
+            }
+            require(ship.left in 0 until columns) {
+                throw IllegalArgumentException("Ship $ship is not in bounds")
+            }
+            require(ship.right in 0 until columns) {
+                throw IllegalArgumentException("Ship $ship is not in bounds")
+            }
+            ships.filter { it !== ship }
+                .forEach { otherShip ->
+                    require(!ship.overlaps(otherShip)) {
+                        throw IllegalArgumentException("Ships $ship and $otherShip overlap")
+                    }
+                }
+        }
+    }
+
     private fun Ship.overlaps(other: Ship): Boolean {
         return (this.left..this.right).intersect(other.left..other.right).isNotEmpty()
                 && (this.top..this.bottom).intersect(other.top..other.bottom).isNotEmpty()
     }
-
-    init {
-        for (ship in ships) {
-            require(ship.top in 0 until rows) { "Ship $ship is not in bounds" }
-            require(ship.bottom in 0 until rows) { "Ship $ship is not in bounds" }
-            require(ship.left in 0 until columns) { "Ship $ship is not in bounds" }
-            require(ship.right in 0 until columns) { "Ship $ship is not in bounds" }
-            for (otherShip in ships) {
-                if (ship !== otherShip) {
-                    require(!ship.overlaps(otherShip)) { "Ships $ship and $otherShip overlap" }
-                }
-            }
-        }
-    }
-
 
     private fun Ship.coversCoordinate(coord: Coordinate): Boolean {
         return coord.x in left..right && coord.y in top..bottom
