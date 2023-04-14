@@ -57,6 +57,7 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
 
 
 
+
     override fun createGrid(
         grid: BooleanMatrix,
         opponent: BattleshipOpponent
