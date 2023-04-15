@@ -12,25 +12,23 @@ class StudentBattleshipOpponent(
 
 ) : BattleshipOpponent {
     //need to check every ship
-    private fun checkShipsOverlap(ships: List<Ship>): Boolean {
-        for (i in ships.indices) {
-            for (j in i + 1 until ships.size) {
-                val ship1 = ships[i]
-                val ship2 = ships[j]
-                val leftOverlap = (ship1.left..ship1.right).intersect(ship2.left..ship2.right).count()
-                val topOverlap = (ship1.top..ship1.bottom).intersect(ship2.top..ship2.bottom).count()
-                if (leftOverlap > 0 && topOverlap > 0) {
-                    return true
+    private fun Ship.overlaps(other: Ship): Boolean {
+        return (this.left..this.right).intersect(other.left..other.right).isNotEmpty()
+                && (this.top..this.bottom).intersect(other.top..other.bottom).isNotEmpty()
+    }
+
+    init {
+        for (ship in ships) {
+            require(ship.top in 0 until rows) { "Ship $ship is not in bounds" }
+            require(ship.bottom in 0 until rows) { "Ship $ship is not in bounds" }
+            require(ship.left in 0 until columns) { "Ship $ship is not in bounds" }
+            require(ship.right in 0 until columns) { "Ship $ship is not in bounds" }
+            for (otherShip in ships) {
+                if (ship !== otherShip) {
+                    require(!ship.overlaps(otherShip)) { "Ships $ship and $otherShip overlap" }
                 }
             }
         }
-        return false
-    }
-
-
-    init {
-        require(ships.all { it.top in 0 until rows && it.bottom in 0 until rows && it.left in 0 until columns && it.right in 0 until columns }) { "Ships must be within the bounds of the game board" }
-        require(!checkShipsOverlap(ships)) { "Ships cannot overlap" }
     }
 
 

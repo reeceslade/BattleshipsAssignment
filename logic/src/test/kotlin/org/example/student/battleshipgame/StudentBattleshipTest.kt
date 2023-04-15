@@ -30,10 +30,11 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     ): StudentBattleshipOpponent {
         val ships = mutableListOf<StudentShip>()
         for (size in shipSizes) {
-            var ship: StudentShip
-            var isValidPlacement: Boolean
-            do {
-                val isVertical = random.nextBoolean()
+            var isVertical: Boolean
+            var ship = StudentShip(0, 0, 0, 0) // initialize with default values
+            var isValidPlacement = false
+            while (!isValidPlacement) {
+                isVertical = random.nextBoolean()
                 val left = random.nextInt(columns)
                 val top = random.nextInt(rows)
                 val bottom = if (isVertical) top + size - 1 else top
@@ -41,14 +42,22 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
                 ship = StudentShip(top, left, bottom, right)
                 isValidPlacement = !ships.any { it.overlaps(ship) } &&
                         ship.top >= 0 && ship.bottom < rows && ship.left >= 0 && ship.right < columns
-            } while (!isValidPlacement)
+                if (isVertical && !isValidPlacement && size == 5 && rows >= size) {
+                    // Try placing horizontally instead
+                    val tempBottom = top
+                    val tempRight = left + size - 1
+                    val tempShip = StudentShip(top, left, tempBottom, tempRight)
+                    isValidPlacement = !ships.any { it.overlaps(tempShip) } &&
+                            tempShip.top >= 0 && tempShip.bottom < rows && tempShip.left >= 0 && tempShip.right < columns
+                    if (isValidPlacement) {
+                        ship = tempShip
+                    }
+                }
+            }
             ships.add(ship)
         }
         return StudentBattleshipOpponent(columns, rows, ships)
     }
-
-
-
 
 
 
