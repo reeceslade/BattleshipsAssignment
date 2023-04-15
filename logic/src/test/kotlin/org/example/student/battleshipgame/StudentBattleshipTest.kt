@@ -3,7 +3,6 @@ package org.example.student.battleshipgame
 import Bships.StudentGrid
 import Bships.StudentBattleshipOpponent
 import Bships.StudentShip
-import Bships.ships
 import uk.ac.bournemouth.ap.battleshiplib.*
 import uk.ac.bournemouth.ap.battleshiplib.test.BattleshipTest
 import uk.ac.bournemouth.ap.lib.matrix.boolean.BooleanMatrix
@@ -30,32 +29,11 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
     ): StudentBattleshipOpponent {
         val ships = mutableListOf<StudentShip>()
         for (size in shipSizes) {
-            var ship: StudentShip
-            var isValidPlacement: Boolean
-            do {
-                val isVertical = random.nextBoolean()
-                val left = random.nextInt(columns)
-                val top = random.nextInt(rows)
-                val bottom = if (isVertical) top + size - 1 else top
-                val right = if (isVertical) left else left + size - 1
-                ship = StudentShip(top, left, bottom, right)
-                isValidPlacement = !ships.any { it.overlaps(ship) } &&
-                        ship.top >= 0 && ship.bottom < rows && ship.left >= 0 && ship.right < columns
-            } while (!isValidPlacement)
-            ships.add(ship)
+            val randomShip = StudentShip.generateRandomShipPlacement(columns, rows, ships, size, random)
+            ships.add(randomShip)
         }
         return StudentBattleshipOpponent(columns, rows, ships)
     }
-
-
-
-
-
-
-
-
-
-
 
     override fun createGrid(
         grid: BooleanMatrix,
