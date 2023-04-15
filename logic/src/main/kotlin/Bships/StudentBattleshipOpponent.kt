@@ -2,7 +2,6 @@ package Bships
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
-import kotlin.random.Random
 
 
 class StudentBattleshipOpponent(
@@ -29,6 +28,9 @@ class StudentBattleshipOpponent(
             }
             require(ship.right in 0 until columns) {
                 throw IllegalArgumentException("Ship $ship is not in bounds")
+            }
+            require(ship.top == ship.bottom || ship.left == ship.right) {
+                throw IllegalArgumentException("Ship $ship is not a rectangle")
             }
             ships.filter { it !== ship }
                 .forEach { otherShip ->
