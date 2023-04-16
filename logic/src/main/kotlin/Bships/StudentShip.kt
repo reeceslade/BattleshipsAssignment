@@ -1,5 +1,6 @@
 package Bships
 
+import Bships.StudentShip.Companion.generateRandomShips
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.random.Random
 
@@ -11,40 +12,35 @@ class StudentShip(
 ) : Ship {
 
     companion object {
-        fun generateRandomShipPlacement(
-            columns: Int,
-            rows: Int,
-            ships: List<StudentShip>,
-            size: Int,
-            random: Random
-        ): StudentShip {
-            var ship: StudentShip
-            var isValidPlacement: Boolean
-            do {
-                val isVertical = random.nextBoolean()
-                val left = random.nextInt(columns)
-                val top = random.nextInt(rows)
-                val bottom = if (isVertical) top + size - 1 else top
-                val right = if (isVertical) left else left + size - 1
-                ship = StudentShip(top, left, bottom, right)
-                isValidPlacement = !ships.any { it.overlaps(ship) } &&
-                        ship.top >= 0 && ship.bottom < rows && ship.left >= 0 && ship.right < columns
-            } while (!isValidPlacement)
-            return ship
+        fun generateRandomShips(columns: Int, rows: Int): List<StudentShip> {
+            val ships = mutableListOf<StudentShip>()
+            val random = Random.Default
+            val sizes = listOf(5, 4, 3, 3, 2) // sizes of the ships
+
+            for (size in sizes) {
+                var ship: StudentShip
+                var isValidPlacement: Boolean
+                do {
+                    val isVertical = random.nextBoolean()
+                    val left = random.nextInt(columns)
+                    val top = random.nextInt(rows)
+                    val bottom = if (isVertical) top + size - 1 else top
+                    val right = if (isVertical) left else left + size - 1
+                    ship = StudentShip(top, left, bottom, right)
+                    isValidPlacement = !ships.any { it.overlaps(ship) } &&
+                            ship.top >= 0 && ship.bottom < rows && ship.left >= 0 && ship.right < columns
+                } while (!isValidPlacement)
+                ships.add(ship)
+            }
+            return ships
         }
     }
 
-     fun overlaps(other: StudentShip): Boolean {
+        fun overlaps(other: StudentShip): Boolean {
          val leftOverlap = (left..right).intersect(other.left..other.right).count()
          val topOverlap = (top..bottom).intersect(other.top..other.bottom).count()
          return leftOverlap > 0 && topOverlap > 0
      }
  }
 
-val carrier = StudentShip(6, 6, 0, 4) // creates a ship at coordinates (0,0) to (0,4)
-val battleship = StudentShip(1, 1, 4, 1) // creates a ship at coordinates (1,1) to (4,1)
-val cruiser = StudentShip(2, 2, 4, 2) // creates a ship at coordinates (2,2) to (4,2)
-val submarine = StudentShip(3, 3, 5, 3) // creates a ship at coordinates (3,3) to (5,3)
-val destroyer = StudentShip(4, 4, 5, 4) // creates a ship at coordinates (4,4) to (5,4)
-
-val ships = listOf(carrier, battleship, cruiser, submarine, destroyer)
+val ships = generateRandomShips(10, 10)
