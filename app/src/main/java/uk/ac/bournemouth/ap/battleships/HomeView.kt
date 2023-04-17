@@ -240,7 +240,7 @@ class HomeView: View {
                 }
                 } else {
                     // Display a message indicating that the guess missed
-                    Snackbar.make(this, "Ship missedddd", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(this, "Ship misseddd", Snackbar.LENGTH_SHORT).show()
                 }
                 invalidate()
                 return true
