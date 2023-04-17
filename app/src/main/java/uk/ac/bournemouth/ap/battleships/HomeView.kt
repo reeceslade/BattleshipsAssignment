@@ -37,7 +37,7 @@ class HomeView: View {
 
     private val colCount: Int get() = game.columns
     private val rowCount: Int get() = game.rows
-    private val shipCount: List<Ship> get() = game.opponent.ships
+    //private val shipCount: List<Ship> get() = game.opponent.ships
     private var circleDiameter: Float = 0f
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
@@ -93,14 +93,13 @@ class HomeView: View {
 
 
         //GRID
-        for (ship in shipCount) {
+        for (ship in ships) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
-            val right = left + (circleDiameter + circleSpacing) * ship.size - circleSpacing
-            val bottom = top + circleDiameter
+            val right = left + circleDiameter
+            val bottom = top + (circleDiameter + circleSpacing) * ship.size - circleSpacing
             canvas.drawRect(left, top, right, bottom, xPaint)
-
-        } //SHIPS
+        }  //SHIPS
 
         // MISSED CELLS
         for (row in 0 until rowCount) {
