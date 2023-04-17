@@ -18,24 +18,24 @@ class StudentBattleshipOpponent(
     private fun checkShips(ships: List<Ship>, columns: Int, rows: Int) {
         ships.forEach { ship ->
             require(ship.top in 0 until rows) {
-                throw IllegalArgumentException("Ship $ship is not in bounds")
+             "Ship $ship is not in bounds"
             }
             require(ship.bottom in 0 until rows) {
-                throw IllegalArgumentException("Ship $ship is not in bounds")
+                "Ship $ship is not in bounds"
             }
             require(ship.left in 0 until columns) {
-                throw IllegalArgumentException("Ship $ship is not in bounds")
+                "Ship $ship is not in bounds"
             }
             require(ship.right in 0 until columns) {
-                throw IllegalArgumentException("Ship $ship is not in bounds")
+                "Ship $ship is not in bounds"
             }
             require(ship.top == ship.bottom || ship.left == ship.right) {
-                throw IllegalArgumentException("Ship $ship is not a rectangle")
+                "Ship $ship is not a rectangle"
             }
             ships.filter { it !== ship }
                 .forEach { otherShip ->
                     require(!ship.overlaps(otherShip)) {
-                        throw IllegalArgumentException("Ships $ship and $otherShip overlap")
+                        "Ships $ship and $otherShip overlap"
                     }
                 }
         }
