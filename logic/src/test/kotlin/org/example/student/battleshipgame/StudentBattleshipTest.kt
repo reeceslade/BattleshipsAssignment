@@ -15,11 +15,6 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
         ships: List<StudentShip>
     ): StudentBattleshipOpponent {
         // Check if any ships are "upside down"
-        for (ship in ships) {
-            if (ship.top > ship.bottom) {
-                throw IllegalArgumentException("Ship is upside down.")
-            }
-        }
         // Create opponent if all ships are valid
         return StudentBattleshipOpponent(columns, rows, ships)
     }

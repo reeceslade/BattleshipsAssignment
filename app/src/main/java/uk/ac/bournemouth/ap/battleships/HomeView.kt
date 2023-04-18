@@ -5,6 +5,7 @@ import Bships.StudentShip
 import Bships.ships
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -13,10 +14,12 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.*
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
+import kotlin.system.exitProcess
 
 class HomeView: View {
     constructor(context: Context?) : super(context)
@@ -94,6 +97,8 @@ class HomeView: View {
 
         //GRID
         //GRID
+
+        //COMMENT THIS OUT IN ACTUAL GAME PLAY
         for (ship in ships) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
@@ -207,6 +212,9 @@ class HomeView: View {
         }
     })
 
+    // Create a list to keep track of sunk status of all ships
+    val shipsSunk = MutableList(game.opponent.ships.size) { false }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -214,7 +222,7 @@ class HomeView: View {
             val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
             if (col in 0 until colCount && row in 0 until rowCount) {
                 val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
-                if(foundShip==null) {
+                if (foundShip == null) {
                     game.cells[col, row] = GuessCell.MISS
                     Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
                     //if the coords are empty (dont have the ship and index) == MISS
@@ -222,30 +230,48 @@ class HomeView: View {
                     val (shipIndex, Ship) = foundShip
                     game.cells[col, row] = GuessCell.HIT(shipIndex)
                     var isSunk = true
-                    Ship.forEachIndex {x, y -> isSunk = isSunk && game.cells[x,y] is GuessCell.HIT}
+                    Ship.forEachIndex { x, y -> isSunk = isSunk && game.cells[x, y] is GuessCell.HIT }
                     Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
 
-                    if(isSunk) {
+                    if (isSunk) {
                         val state = GuessCell.SUNK(shipIndex)
-                        Ship.forEachIndex { x, y -> game.cells[x,y] = state  }
-                        val shipsSunk = MutableList(game.opponent.ships.size) { false }
+                        Ship.forEachIndex { x, y -> game.cells[x, y] = state }
                         shipsSunk[shipIndex] = true
                         GuessResult.SUNK(shipIndex)
                         Snackbar.make(this, "Ship sunkk", Snackbar.LENGTH_SHORT).show()
+
+                        if (shipsSunk.all { it }) {
+                            showGameOverScreen()
+                            exitProcess(0)
+                        }
+
                     } else {
                         GuessResult.HIT(shipIndex)
 
                         Snackbar.make(this, "Ship hitt", Snackbar.LENGTH_SHORT).show()
                     }
-
                 }
-                } else {
-                    // Display a message indicating that the guess missed
-                    Snackbar.make(this, "Ship misseddd", Snackbar.LENGTH_SHORT).show()
-                }
-                invalidate()
-                return true
+            } else {
+                // Display a message indicating that the guess missed
+                Snackbar.make(this, "Ship misseddd", Snackbar.LENGTH_SHORT).show()
             }
+            invalidate()
+            return true
+        }
         return false
     }
+    private fun showGameOverScreen() {
+        // Create an Intent to start the GameOverActivity
+        val intent = Intent(this, GameOverActivity::class.java)
+        // Add any extra data to the Intent if needed
+        // For example, you can pass the game score or other relevant information
+        // using intent.putExtra() method
+
+        // Start the GameOverActivity
+        startActivity(intent)
+
+        // Finish the current activity if needed
+        finish()
+    }
+
 }

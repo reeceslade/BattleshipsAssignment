@@ -17,6 +17,11 @@ class StudentBattleshipOpponent(
 
     private fun checkShips(ships: List<Ship>, columns: Int, rows: Int) {
         ships.forEach { ship ->
+
+            if (ship.top > ship.bottom) {
+                throw IllegalArgumentException("Ship is upside down.")
+            }
+
             require(ship.top in 0 until rows) {
              "Ship $ship is not in bounds"
             }
