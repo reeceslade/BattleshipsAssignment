@@ -93,13 +93,15 @@ class HomeView: View {
 
 
         //GRID
+        //GRID
         for (ship in ships) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
-            val right = left + circleDiameter
-            val bottom = top + (circleDiameter + circleSpacing) * ship.size - circleSpacing
+            val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
+            val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
             canvas.drawRect(left, top, right, bottom, xPaint)
         }  //SHIPS
+        //SHIPS
 
         // MISSED CELLS
         for (row in 0 until rowCount) {
