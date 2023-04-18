@@ -4,4 +4,5 @@
     <string name="exit">Exit</string>
     <string name="play_game">Play Game</string>
     <string name="change_difficulty">Change Difficulty</string>
+    <string name="restart">restart</string>
 </resources>
