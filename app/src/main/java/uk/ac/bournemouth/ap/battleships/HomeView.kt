@@ -262,26 +262,16 @@ class HomeView: View {
         return false
     }
     private fun showGameOverScreen() {
-        // Create a dialog builder
-        val builder = AlertDialog.Builder(context)
+        // Create an intent to start the new activity
+        val gameOverIntent = Intent(context, GameOverActivity::class.java) // Replace YourNewActivity with the actual name of the activity you want to open
 
-        // Set the title and message for the dialog
-        builder.setTitle("Game Over")
-        builder.setMessage("All opponent ships are sunk.")
+        // Add any extra data to the intent if needed
+        // gameOverIntent.putExtra("key", value)
 
-        // Set a positive button with a click listener to handle restart or exit game
-        builder.setPositiveButton("Restart") { _, _ ->
-            // Restart the game logic or reset the game state
-            // You can implement your own logic here
-        }
-        builder.setNegativeButton("Exit") { _, _ ->
-            // Exit the game or go back to the main menu
-            // You can implement your own logic here
-        }
-
-        // Create and show the dialog
-        val dialog = builder.create()
-        dialog.show()
+        // Start the new activity
+        context.startActivity(gameOverIntent)
+        // Finish the current activity if needed
+        // You can implement your own logic here
     }
 
 }
