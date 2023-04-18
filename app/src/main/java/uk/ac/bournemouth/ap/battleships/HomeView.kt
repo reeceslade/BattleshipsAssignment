@@ -4,6 +4,7 @@ import Bships.StudentGrid
 import Bships.StudentShip
 import Bships.ships
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
@@ -214,7 +215,7 @@ class HomeView: View {
     })
 
     // Create a list to keep track of sunk status of all ships
-    val shipsSunk = MutableList(game.opponent.ships.size) { false }
+    private val shipsSunk = MutableList(game.opponent.ships.size) { false }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -243,7 +244,6 @@ class HomeView: View {
 
                         if (shipsSunk.all { it }) {
                             showGameOverScreen()
-                            exitProcess(0)
                         }
 
                     } else {
@@ -262,15 +262,26 @@ class HomeView: View {
         return false
     }
     private fun showGameOverScreen() {
-        // Create an Intent to start the GameOverActivity
-        val intent = Intent(context, GameOverActivity::class.java)
-        // Add any extra data to the Intent if needed
-        // For example, you can pass the game score or other relevant information
-        // using intent.putExtra() method
+        // Create a dialog builder
+        val builder = AlertDialog.Builder(context)
 
-        // Start the GameOverActivity
-        startActivity(context, intent, Bundle.EMPTY) // Update this line
+        // Set the title and message for the dialog
+        builder.setTitle("Game Over")
+        builder.setMessage("All opponent ships are sunk.")
 
-        // Finish the current activity if needed
+        // Set a positive button with a click listener to handle restart or exit game
+        builder.setPositiveButton("Restart") { _, _ ->
+            // Restart the game logic or reset the game state
+            // You can implement your own logic here
+        }
+        builder.setNegativeButton("Exit") { _, _ ->
+            // Exit the game or go back to the main menu
+            // You can implement your own logic here
+        }
+
+        // Create and show the dialog
+        val dialog = builder.create()
+        dialog.show()
     }
+
 }
