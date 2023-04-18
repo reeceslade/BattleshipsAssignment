@@ -14,8 +14,6 @@ class StudentBattleshipTest : BattleshipTest<StudentShip>() {
         rows: Int,
         ships: List<StudentShip>
     ): StudentBattleshipOpponent {
-        // Check if any ships are "upside down"
-        // Create opponent if all ships are valid
         return StudentBattleshipOpponent(columns, rows, ships)
     }
 

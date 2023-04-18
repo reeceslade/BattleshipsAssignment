@@ -10,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Bundle
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -262,16 +263,14 @@ class HomeView: View {
     }
     private fun showGameOverScreen() {
         // Create an Intent to start the GameOverActivity
-        val intent = Intent(this, GameOverActivity::class.java)
+        val intent = Intent(context, GameOverActivity::class.java)
         // Add any extra data to the Intent if needed
         // For example, you can pass the game score or other relevant information
         // using intent.putExtra() method
 
         // Start the GameOverActivity
-        startActivity(intent)
+        startActivity(context, intent, Bundle.EMPTY) // Update this line
 
         // Finish the current activity if needed
-        finish()
     }
-
 }
