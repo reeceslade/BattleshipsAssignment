@@ -5,10 +5,10 @@ import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.random.Random
 
 class StudentShip(
-    override val top: Int,
-    override val left: Int,
-    override val bottom: Int,
-    override val right: Int
+    override var top: Int,
+    override var left: Int,
+    override var bottom: Int,
+    override var right: Int
 ) : Ship {
 
     companion object {

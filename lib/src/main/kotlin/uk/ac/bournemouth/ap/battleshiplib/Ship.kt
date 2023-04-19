@@ -7,10 +7,10 @@ import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
 //assumes shapes are rectangular
 //dont have to use these
 interface Ship {
-    val top: Int
-    val left: Int
-    val bottom: Int
-    val right: Int
+    var top: Int
+    var left: Int
+    var bottom: Int
+    var right: Int
 
     val columnIndices: IntRange get() = left..right
     val rowIndices: IntRange get() = top..bottom
