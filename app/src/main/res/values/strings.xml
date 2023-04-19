@@ -5,4 +5,6 @@
     <string name="play_game">Play Game</string>
     <string name="change_difficulty">Change Difficulty</string>
     <string name="restart">restart</string>
+    <string name="game_won">Game Won!</string>
+    <string name="your_opponents_fleet_has_been_destroyed">Your opponents fleet has been destroyed!</string>
 </resources>
