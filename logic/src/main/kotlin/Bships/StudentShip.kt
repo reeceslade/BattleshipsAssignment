@@ -1,6 +1,7 @@
 package Bships
 
 import Bships.StudentShip.Companion.generateRandomShips
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.random.Random
 
@@ -12,10 +13,8 @@ class StudentShip(
 ) : Ship {
 
     companion object {
-        fun generateRandomShips(columns: Int, rows: Int): List<StudentShip> {
+        fun generateRandomShips(columns: Int = BattleshipGrid.DEFAULT_COLUMNS, rows: Int = BattleshipGrid.DEFAULT_ROWS, sizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES, random: Random = Random): List<StudentShip> {
             val ships = mutableListOf<StudentShip>()
-            val random = Random.Default
-            val sizes = listOf(5, 4, 3, 3, 2) // sizes of the ships
 
             for (size in sizes) {
                 var ship: StudentShip
@@ -43,4 +42,3 @@ class StudentShip(
      }
  }
 
-val ships = generateRandomShips(10, 10)

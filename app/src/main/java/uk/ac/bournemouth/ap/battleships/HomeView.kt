@@ -2,26 +2,19 @@ package uk.ac.bournemouth.ap.battleships
 import Bships.StudentBattleshipOpponent
 import Bships.StudentGrid
 import Bships.StudentShip
-import Bships.ships
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.RectF
-import android.os.Bundle
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.*
-import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
-import kotlin.system.exitProcess
 
 class HomeView: View {
     constructor(context: Context?) : super(context)
@@ -32,17 +25,16 @@ class HomeView: View {
         defStyleAttr
     )
 
-    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10, 10, ships))
+    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10, 10, StudentShip.generateRandomShips(10, 10)))
         set(value) {
             field = value
             // After the new value is set, make sure to recalculate sizes and then trigger a redraw
             recalculateDimensions()
             invalidate()
         }
-
+    private val ships get() = game.opponent.ships
     private val colCount: Int get() = game.columns
     private val rowCount: Int get() = game.rows
-    //private val shipCount: List<Ship> get() = game.opponent.ships
     private var circleDiameter: Float = 0f
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
@@ -65,7 +57,10 @@ class HomeView: View {
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
+        recalculateDimensions(w, h)
+    }
+
+    private fun recalculateDimensions(w: Int = width, h: Int = height) {
         val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
         val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
         circleDiameter = minOf(diameterX, diameterY)
@@ -74,10 +69,8 @@ class HomeView: View {
         xPaint.strokeWidth = circleSpacing / 2f
     }
 
-    private fun recalculateDimensions(w: Int = width, h: Int = height) {}
-
-    val gridLeft = 0f
-    val gridTop = 0f
+    private val gridLeft = 0f
+    private val gridTop = 0f
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -86,28 +79,16 @@ class HomeView: View {
         val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
         val gridBottom = gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
         val radius = circleDiameter / 2f
-        canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
-        for (row in 0..rowCount) {
-            val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
-            canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
-        }
-        for (col in 0..colCount) {
-            val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
-            canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
-        }
-
-
+        drawGrid(canvas, gridLeft, gridTop, gridRight, gridBottom)
         //GRID
-        //GRID
-
         //COMMENT THIS OUT IN ACTUAL GAME PLAY
-      /*  for (ship in ships) {
+       for (ship in ships) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
             val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
             val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
             canvas.drawRect(left, top, right, bottom, xPaint)
-        }  //SHIPS */
+        }  //SHIPS
         //SHIPS
 
         // MISSED CELLS
@@ -146,6 +127,24 @@ class HomeView: View {
                     else -> {}
                 }
             }
+        }
+    }
+
+    private fun drawGrid(
+        canvas: Canvas,
+        gridLeft: Float,
+        gridTop: Float,
+        gridRight: Float,
+        gridBottom: Float
+    ) {
+        canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
+        for (row in 0..rowCount) {
+            val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
+            canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
+        }
+        for (col in 0..colCount) {
+            val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
+            canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
     }
 
