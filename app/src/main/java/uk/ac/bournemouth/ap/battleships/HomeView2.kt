@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.random.Random
@@ -98,6 +99,7 @@ class HomeView2 : View {
     val gridLeft = 0f
     val gridTop = 0f
     @SuppressLint("ClickableViewAccessibility")
+    // Inside the onTouchEvent() method
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -108,23 +110,17 @@ class HomeView2 : View {
                     val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
                     val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
                     val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
+
                     if (x in left..right && y >= top && y <= bottom) {
-                        val shipName = when (ships.size) {
-                            2 -> "Patrol Boat"
-                            3 -> "Submarine"
-                            4 -> "Battleship"
-                            5 -> "Aircraft Carrier"
-                            else -> "Unknown"
-                        }
-                        val snackbarText = "$shipName has been touched."
-                        val snackbar = Snackbar.make(this, snackbarText, Snackbar.LENGTH_LONG)
-                        snackbar.show()
-                        break
+                        // Show Snackbar with ship size
+                        Snackbar.make(this, "Ship size: ${ship.size}", Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
         }
         return true
     }
+
+
 }
 
