@@ -8,6 +8,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -29,12 +30,19 @@ class HomeView2 : View {
     )
 
     private val ships = StudentShip.generateRandomShips(10, 10)
-
+    private val buttonBounds = RectF()
     private val colCount = 10
     private val rowCount = 10
     private var circleDiameter: Float = 0f
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
+
+    private val buttonTextPaint = Paint().apply {
+        // Define button text color
+        color = Color.WHITE // Set the text color to red
+        textSize = 48f // Set the text size to 48dp
+        textAlign = Paint.Align.CENTER
+    }
 
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -52,7 +60,7 @@ class HomeView2 : View {
         style = Paint.Style.FILL
         color = Color.BLACK
     }
-
+    private val buttonTextSize = 48f // Set the text size to 48dp
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
@@ -61,6 +69,12 @@ class HomeView2 : View {
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
         xPaint.strokeWidth = circleSpacing / 2f
+        // Update button bounds
+        val buttonWidth = w / 2f
+        val buttonHeight = h / 10f
+        val buttonLeft = (w - buttonWidth) / 2f
+        val buttonTop = h - buttonHeight * 2
+        buttonBounds.set(buttonLeft, buttonTop, buttonLeft + buttonWidth, buttonTop + buttonHeight)
     }
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {}
@@ -81,7 +95,6 @@ class HomeView2 : View {
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
 
-
         //draw ships and grids
         for (ship in ships) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
@@ -93,13 +106,16 @@ class HomeView2 : View {
             canvas.drawRect(left, top, right, bottom, xPaint)
             invalidate()
         }
+        canvas.drawRect(buttonBounds, player1Paint)
+        canvas.drawText("Confirm Placement", buttonBounds.centerX(), buttonBounds.centerY() + buttonTextSize / 2, buttonTextPaint)
+
 
         // MISSED CELLS
     }
     private val gridLeft = 0f
     private val gridTop = 0f
     // Inside the onTouchEvent() method
-    val shipPositions = HashMap<Ship, Pair<Int, Int>>()
+    private val shipPositions = HashMap<Ship, Pair<Int, Int>>()
     private var selectedShip: Ship? = null
     private var offsetY: Float = 0f
     private var offsetX: Float = 0f
@@ -107,11 +123,16 @@ class HomeView2 : View {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         println(shipPositions)
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val touchX = event.x
                 val touchY = event.y
-
+                if (buttonBounds.contains(touchX, touchY)) {
+                    // Button clicked, do something
+                    Snackbar.make(this, "Button clicked", Snackbar.LENGTH_SHORT).show()
+                    return true
+                }
                 // Check if the touch coordinates are within a ship's bounding box
                 for (ship in ships) {
                     val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
@@ -127,6 +148,7 @@ class HomeView2 : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+
                 val touchX = event.x
                 val touchY = event.y
 
@@ -146,6 +168,7 @@ class HomeView2 : View {
                     shipPositions[ship] = Pair(ship.left, ship.top)
                     println(shipPositions)
                     // Invalidate the view to trigger a redraw
+
                     invalidate()
                 }
                 return true
