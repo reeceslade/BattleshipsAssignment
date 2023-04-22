@@ -100,6 +100,9 @@ class HomeView2 : View {
     val gridTop = 0f
     // Inside the onTouchEvent() method
     val shipPositions = HashMap<Ship, Pair<Int, Int>>()
+    var selectedShip: Ship? = null
+    var initialX: Float = 0f
+    var initialY: Float = 0f
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -107,38 +110,49 @@ class HomeView2 : View {
             MotionEvent.ACTION_DOWN -> {
                 val x = event.x
                 val y = event.y
-                for (ship in ships) {
+                for ((ship, position) in shipPositions) {
                     val left =
-                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
+                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * position.first)
                     val top =
-                        gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
+                        gridTop + circleSpacing + ((circleDiameter + circleSpacing) * position.second)
                     val right =
-                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
+                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (position.first)) + circleDiameter
                     val bottom =
-                        gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
+                        gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (position.second)) + circleDiameter
 
                     if (x in left..right && y >= top && y <= bottom) {
-                        // Calculate the row and column of the ship
-                        val row = (y - gridTop - circleSpacing) / (circleDiameter + circleSpacing)
-                        val col = (x - gridLeft - circleSpacing) / (circleDiameter + circleSpacing)
-
-                        // Store the row and column in the HashMap
-                        shipPositions[ship] = Pair(row.toInt() + 1, col.toInt() + 1)
-                        println(shipPositions)
-                        // Show Snackbar with ship size and location
-                        Snackbar.make(
-                            this,
-                            "Ship size: ${ship.size}, Location: Row ${row.toInt() + 1}, Column ${col.toInt() + 1}",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-
+                        selectedShip = ship
+                        initialX = event.x
+                        initialY = event.y
                         return true
                     }
                 }
             }
+            MotionEvent.ACTION_MOVE -> {
+                if (selectedShip != null) {
+                    val dx = event.x - initialX
+                    val dy = event.y - initialY
+                    val position = shipPositions[selectedShip!!]
+                    position?.let { pos ->
+                        val newLeft = (pos.first + dx / (circleDiameter + circleSpacing)).toInt()
+                        val newTop = (pos.second + dy / (circleDiameter + circleSpacing)).toInt()
+                        shipPositions[selectedShip!!] = Pair(newLeft, newTop)
+                        initialX = event.x
+                        initialY = event.y
+                    }
+                    invalidate()
+                    return true
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                selectedShip = null
+                return true
+            }
         }
         return super.onTouchEvent(event)
     }
+
+
 
 }
 
