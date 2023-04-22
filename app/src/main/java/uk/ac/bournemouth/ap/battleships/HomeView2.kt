@@ -96,18 +96,18 @@ class HomeView2 : View {
 
         // MISSED CELLS
     }
-    val gridLeft = 0f
-    val gridTop = 0f
+    private val gridLeft = 0f
+    private val gridTop = 0f
     // Inside the onTouchEvent() method
     val shipPositions = HashMap<Ship, Pair<Int, Int>>()
-    var selectedShip: Ship? = null
-    var offsetY: Float = 0f
-    var offsetX: Float = 0f
+    private var selectedShip: Ship? = null
+    private var offsetY: Float = 0f
+    private var offsetX: Float = 0f
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val action = event.action
-        when (action) {
+        println(shipPositions)
+        when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val touchX = event.x
                 val touchY = event.y
@@ -118,7 +118,7 @@ class HomeView2 : View {
                     val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
                     val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
                     val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
-                    if (touchX >= left && touchX <= right && touchY >= top && touchY <= bottom) {
+                    if (touchX in left..right && touchY >= top && touchY <= bottom) {
                         selectedShip = ship
                         offsetX = touchX - left
                         offsetY = touchY - top
@@ -142,6 +142,9 @@ class HomeView2 : View {
                     ship.right = (newRight / (circleDiameter + circleSpacing)).toInt() - 1
                     ship.bottom = (newBottom / (circleDiameter + circleSpacing)).toInt() - 1
 
+                    // Update the ship's position in the shipPositions HashMap
+                    shipPositions[ship] = Pair(ship.left, ship.top)
+                    println(shipPositions)
                     // Invalidate the view to trigger a redraw
                     invalidate()
                 }
