@@ -101,57 +101,61 @@ class HomeView2 : View {
     // Inside the onTouchEvent() method
     val shipPositions = HashMap<Ship, Pair<Int, Int>>()
     var selectedShip: Ship? = null
-    var initialX: Float = 0f
-    var initialY: Float = 0f
+    var offsetY: Float = 0f
+    var offsetX: Float = 0f
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
+        val action = event.action
+        when (action) {
             MotionEvent.ACTION_DOWN -> {
-                val x = event.x
-                val y = event.y
-                for ((ship, position) in shipPositions) {
-                    val left =
-                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * position.first)
-                    val top =
-                        gridTop + circleSpacing + ((circleDiameter + circleSpacing) * position.second)
-                    val right =
-                        gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (position.first)) + circleDiameter
-                    val bottom =
-                        gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (position.second)) + circleDiameter
+                val touchX = event.x
+                val touchY = event.y
 
-                    if (x in left..right && y >= top && y <= bottom) {
+                // Check if the touch coordinates are within a ship's bounding box
+                for (ship in ships) {
+                    val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
+                    val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
+                    val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
+                    val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
+                    if (touchX >= left && touchX <= right && touchY >= top && touchY <= bottom) {
                         selectedShip = ship
-                        initialX = event.x
-                        initialY = event.y
+                        offsetX = touchX - left
+                        offsetY = touchY - top
                         return true
                     }
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                if (selectedShip != null) {
-                    val dx = event.x - initialX
-                    val dy = event.y - initialY
-                    val position = shipPositions[selectedShip!!]
-                    position?.let { pos ->
-                        val newLeft = (pos.first + dx / (circleDiameter + circleSpacing)).toInt()
-                        val newTop = (pos.second + dy / (circleDiameter + circleSpacing)).toInt()
-                        shipPositions[selectedShip!!] = Pair(newLeft, newTop)
-                        initialX = event.x
-                        initialY = event.y
-                    }
+                val touchX = event.x
+                val touchY = event.y
+
+                selectedShip?.let { ship ->
+                    val newLeft = touchX - offsetX - gridLeft - circleSpacing
+                    val newTop = touchY - offsetY - gridTop - circleSpacing
+                    val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
+                    val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
+
+                    // Update the ship's position
+                    ship.left = (newLeft / (circleDiameter + circleSpacing)).toInt()
+                    ship.top = (newTop / (circleDiameter + circleSpacing)).toInt()
+                    ship.right = (newRight / (circleDiameter + circleSpacing)).toInt() - 1
+                    ship.bottom = (newBottom / (circleDiameter + circleSpacing)).toInt() - 1
+
+                    // Invalidate the view to trigger a redraw
                     invalidate()
-                    return true
                 }
+                return true
             }
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 selectedShip = null
+                offsetX = 0f
+                offsetY = 0f
                 return true
             }
         }
-        return super.onTouchEvent(event)
+        return false
     }
-
 
 
 }
