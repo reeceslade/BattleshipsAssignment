@@ -1,5 +1,7 @@
 package uk.ac.bournemouth.ap.battleships
 
+import Bships.StudentBattleshipOpponent
+import Bships.StudentGrid
 import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,9 +10,12 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.Ship
@@ -112,54 +117,39 @@ class HomeView2 : View {
         // MISSED CELLS
     }
 
-    private fun startOpponentTurn(e: MotionEvent): Boolean {
+    private fun startOpponentTurn() {
         // Generate random coordinates for opponent's shot
         val row = Random.nextInt(rowCount)
         val col = Random.nextInt(colCount)
-        val columnTouched = ((e.x - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
-        val rowTouched = ((e.y - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
-
-        if (columnTouched in 0 until col && rowTouched in 0 until row) {
-            val guessCell = game[columnTouched, rowTouched]
-            val hit = guessCell is GuessCell.HIT
-
-            val guessResult = if (hit) {
-                val hitShip = game.opponent.ships.find { ship ->
-                    (columnTouched in ship.left..ship.right) && (rowTouched in ship.top..ship.bottom)
-                }
-                if (hitShip != null) GuessResult.HIT(game.opponent.ships.indexOf(hitShip)) else GuessResult.MISS
-            } else {
-                GuessResult.MISS
+        val guessCell = game[col, row]
+        //what to replace with game
+        val hit = guessCell is GuessCell.HIT
+        val guessResult = if (hit) {
+            val hitShip = shipPositions.let {
+                shipPositions[selectedShip]
             }
-
-            game.shootAt(columnTouched, rowTouched)
-            invalidate()
-
-            // Handle guess result
-            when (guessResult) {
-                is GuessResult.HIT -> {
-                    val message = "HIT!"
-                    val duration = Snackbar.LENGTH_SHORT
-                    val snackbar = Snackbar.make(this@HomeView2, message, duration)
-                    snackbar.show()
+            if (hitShip != null) GuessResult.HIT(selectedShip.indexOf(hitShip)) else GuessResult.MISS
+        } else {
+            GuessResult.MISS
+        }
+        // Check if the shot hits any of the ships
+        for (ship in ships) {
+            if (shipPositions(row, col)) {
+                // Shot hits a ship, mark the ship as hit
+                shipPositions.hit(row, col)
+                // Update UI to show the hit
+                invalidate()
+                // Check if all ships are sunk
+                if (shipPositions.all { it.isSunk() }) {
+                    Snackbar.make(this, "Game Over", Snackbar.LENGTH_LONG).show()
+                    // TODO: Add logic to restart the game or perform other actions
                 }
-                is GuessResult.SUNK -> {
-                    val message = "SUNK!"
-                    val duration = Snackbar.LENGTH_SHORT
-                    val snackbar = Snackbar.make(this@HomeView2, message, duration)
-                    snackbar.show()
-                }
-                is GuessResult.MISS -> {
-                    val message = "Miss"
-                    val duration = Snackbar.LENGTH_SHORT
-                    val snackbar = Snackbar.make(this@HomeView2, message, duration)
-                    snackbar.show()
-                }
+                return
             }
         }
     }
-        // Shot misses all ships,
 
+    private val shipsSunk = MutableList(ships.size) { false }
     private val gridLeft = 0f
     private val gridTop = 0f
     // Inside the onTouchEvent() method
@@ -183,13 +173,9 @@ class HomeView2 : View {
                 if (buttonBounds.contains(touchX, touchY)) {
                     placementConfirmed = true
                     // Start opponent's turn to randomly shoot at ships
+                    startOpponentTurn()
                     // Button clicked, do something
                     Snackbar.make(this, "Button clicked", Snackbar.LENGTH_SHORT).show()
-                    for (ship in ships) {
-                        shipPositions[ship] = Pair(ship.left, ship.top)
-                    }
-                    println(shipPositions)
-                    startOpponentTurn()
                     invalidate()
                     return true
                 }
