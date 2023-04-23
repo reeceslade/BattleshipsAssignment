@@ -1,7 +1,5 @@
 package uk.ac.bournemouth.ap.battleships
 
-import Bships.StudentBattleshipOpponent
-import Bships.StudentGrid
 import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,13 +8,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
-import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
+import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.random.Random
 
@@ -28,7 +24,7 @@ class HomeView2 : View {
         attrs,
         defStyleAttr
     )
-
+    private var placementConfirmed = false
     private val ships = StudentShip.generateRandomShips(10, 10)
     private val buttonBounds = RectF()
     private val colCount = 10
@@ -96,15 +92,18 @@ class HomeView2 : View {
         }
 
         //draw ships and grids
-        for (ship in ships) {
-            val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
-            val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
-            val right =
-                gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
-            val bottom =
-                gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
-            canvas.drawRect(left, top, right, bottom, xPaint)
-            invalidate()
+        if (!placementConfirmed) {
+            // Draw ships
+            for (ship in ships) {
+                val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
+                val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
+                val right =
+                    gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
+                val bottom =
+                    gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
+                canvas.drawRect(left, top, right, bottom, xPaint)
+                invalidate()
+            }
         }
         canvas.drawRect(buttonBounds, player1Paint)
         canvas.drawText("Confirm Placement", buttonBounds.centerX(), buttonBounds.centerY() + buttonTextSize / 2, buttonTextPaint)
@@ -112,6 +111,55 @@ class HomeView2 : View {
 
         // MISSED CELLS
     }
+
+    private fun startOpponentTurn(e: MotionEvent): Boolean {
+        // Generate random coordinates for opponent's shot
+        val row = Random.nextInt(rowCount)
+        val col = Random.nextInt(colCount)
+        val columnTouched = ((e.x - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
+        val rowTouched = ((e.y - circleSpacing * 0.5f) / (circleSpacing + circleDiameter)).toInt()
+
+        if (columnTouched in 0 until col && rowTouched in 0 until row) {
+            val guessCell = game[columnTouched, rowTouched]
+            val hit = guessCell is GuessCell.HIT
+
+            val guessResult = if (hit) {
+                val hitShip = game.opponent.ships.find { ship ->
+                    (columnTouched in ship.left..ship.right) && (rowTouched in ship.top..ship.bottom)
+                }
+                if (hitShip != null) GuessResult.HIT(game.opponent.ships.indexOf(hitShip)) else GuessResult.MISS
+            } else {
+                GuessResult.MISS
+            }
+
+            game.shootAt(columnTouched, rowTouched)
+            invalidate()
+
+            // Handle guess result
+            when (guessResult) {
+                is GuessResult.HIT -> {
+                    val message = "HIT!"
+                    val duration = Snackbar.LENGTH_SHORT
+                    val snackbar = Snackbar.make(this@HomeView2, message, duration)
+                    snackbar.show()
+                }
+                is GuessResult.SUNK -> {
+                    val message = "SUNK!"
+                    val duration = Snackbar.LENGTH_SHORT
+                    val snackbar = Snackbar.make(this@HomeView2, message, duration)
+                    snackbar.show()
+                }
+                is GuessResult.MISS -> {
+                    val message = "Miss"
+                    val duration = Snackbar.LENGTH_SHORT
+                    val snackbar = Snackbar.make(this@HomeView2, message, duration)
+                    snackbar.show()
+                }
+            }
+        }
+    }
+        // Shot misses all ships,
+
     private val gridLeft = 0f
     private val gridTop = 0f
     // Inside the onTouchEvent() method
@@ -122,15 +170,27 @@ class HomeView2 : View {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        println(shipPositions)
 
+        println(shipPositions)
+        if (placementConfirmed) {
+            // Ship placement confirmed, do not allow dragging and dropping
+            return false
+        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val touchX = event.x
                 val touchY = event.y
                 if (buttonBounds.contains(touchX, touchY)) {
+                    placementConfirmed = true
+                    // Start opponent's turn to randomly shoot at ships
                     // Button clicked, do something
                     Snackbar.make(this, "Button clicked", Snackbar.LENGTH_SHORT).show()
+                    for (ship in ships) {
+                        shipPositions[ship] = Pair(ship.left, ship.top)
+                    }
+                    println(shipPositions)
+                    startOpponentTurn()
+                    invalidate()
                     return true
                 }
                 // Check if the touch coordinates are within a ship's bounding box
