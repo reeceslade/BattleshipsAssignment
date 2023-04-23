@@ -19,6 +19,7 @@ import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.Ship
+import java.lang.reflect.Array.get
 import kotlin.random.Random
 
 class HomeView2 : View {
@@ -121,7 +122,7 @@ class HomeView2 : View {
         // Generate random coordinates for opponent's shot
         val row = Random.nextInt(rowCount)
         val col = Random.nextInt(colCount)
-        val guessCell = game[col, row]
+        val guessCell = get(col, row)
         //what to replace with game
         val hit = guessCell is GuessCell.HIT
         val guessResult = if (hit) {
