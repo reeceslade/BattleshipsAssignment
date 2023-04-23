@@ -143,7 +143,6 @@ class HomeView2 : View {
                 // Check if all ships are sunk
                 if (shipPositions.all { it.isSunk() }) {
                     Snackbar.make(this, "Game Over", Snackbar.LENGTH_LONG).show()
-                    // TODO: Add logic to restart the game or perform other actions
                 }
                 return
             }
