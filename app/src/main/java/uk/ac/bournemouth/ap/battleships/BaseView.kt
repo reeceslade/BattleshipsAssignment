@@ -20,7 +20,7 @@ abstract class BaseView : View {
 
 // Child class 1
 class PlayerView : BaseView() {
-    // Functionality specific to PlayerView
+ d   // Functionality specific to PlayerView
     // ...
 }
 
