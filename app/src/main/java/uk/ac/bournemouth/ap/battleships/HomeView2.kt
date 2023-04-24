@@ -108,54 +108,7 @@ class HomeView2 : View {
         }
         canvas.drawRect(buttonBounds, player1Paint)
         canvas.drawText("Confirm Placement", buttonBounds.centerX(), buttonBounds.centerY() + buttonTextSize / 2, buttonTextPaint)
-
-
-        // MISSED CELLS
     }
-
-    private fun startOpponentTurn() {
-        // Generate a random guess for the opponent
-        val guessCol = Random.nextInt(colCount)
-        val guessRow = Random.nextInt(rowCount)
-
-        // Check if the guess has already been made
-        val guessCell = cells[guessCol, guessRow]
-        if (guessCell == GuessCell.UNSET) {
-            // If the guess hasn't been made before, update the game state
-            val guessResult = get(guessCol, guessRow)
-            when (guessResult) {
-                GuessResult.MISS -> {
-                    cells[guessCol, guessRow] = GuessCell.MISS
-                }
-
-              /*  GuessResult.HIT -> {
-                    // If it's a hit, mark the guess cell as a hit and update the opponent's ships
-                    cells[guessCol, guessRow] = GuessCell.HIT
-                    for (ship in ships) {
-                        if (ship.contains(guessCol, guessRow)) {
-                            ship.hit(guessCol, guessRow)
-                            if (ship.isSunk()) {
-                                // If the ship is sunk, mark all its cells as hits
-                                for (cell in ship.getOccupiedCells()) {
-                                    cells[cell.col, cell.row] = GuessCell.HIT
-                                }
-                            }
-                            break
-                        }
-                    }
-                }
-            }
-        } else {
-            // If the guess has been made before, generate a new guess
-            startOpponentTurn()
-        }
-*/
-        // Update the view to reflect the changes in the game state
-            }
-        }
-    }
-
-
 
     private val shipsSunk = MutableList(ships.size) { false }
     private val gridLeft = 0f

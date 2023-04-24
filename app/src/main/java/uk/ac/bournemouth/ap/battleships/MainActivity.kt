@@ -11,9 +11,11 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         val playGameButton = findViewById<Button>(R.id.playGameBtn)
         playGameButton.setOnClickListener {
-            val homeView2 = HomeView2(this)
-            setContentView(homeView2)
+            val shipPositions = listOf<Pair<Int, Int>>(/* Add your ship positions here */)
+            val homeView3 = HomeView3(this, shipPositions)
+            setContentView(homeView3)
         }
+
         val exitGameButton = findViewById<Button>(R.id.btn_exit)
         exitGameButton.setOnClickListener {
             finish() // Finish the activity, which will exit the game
