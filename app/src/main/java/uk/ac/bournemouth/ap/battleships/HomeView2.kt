@@ -3,10 +3,7 @@ package uk.ac.bournemouth.ap.battleships
 import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -14,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.Ship
+import uk.ac.bournemouth.ap.battleshiplib.overlaps
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
 import java.lang.reflect.Array.get
 import kotlin.random.Random
@@ -116,37 +114,47 @@ class HomeView2 : View {
     }
 
     private fun startOpponentTurn() {
-        // Generate random coordinates for opponent's shot
-        val row = Random.nextInt(rowCount)
-        val col = Random.nextInt(colCount)
-        val guessCell = get(col, row)
-        // Get the guessed cell and check if it's a hit or miss
-        val hit = guessCell is GuessCell.HIT
-        val guessResult = if (hit) {
-            //need to access cells
-            val hitShip = shipPositions.values.find { ship ->
-                (col in ship.left..ship.right) && (row in ship.top..ship.bottom)
-            }
-            if (hitShip != null) GuessResult.HIT(shipPositions.values.indexOf(hitShip)) else GuessResult.MISS
-        } else {
-            GuessResult.MISS
-        }
-        invalidate()
-        // Check if the shot hits any of the ships
-        for (ship in ships) {
-            if (ship.cells.contains(guessCell)) {
-                // Shot hits a ship, mark the ship as hit
-                ship.hit(guessCell)
-                // Update UI to show the hit
-                invalidate()
-                // Check if all ships are sunk
-                if (ships.all { it.isSunk() }) {
-                    Snackbar.make(this, "Game Over", Snackbar.LENGTH_LONG).show()
+        // Generate a random guess for the opponent
+        val guessCol = Random.nextInt(colCount)
+        val guessRow = Random.nextInt(rowCount)
+
+        // Check if the guess has already been made
+        val guessCell = cells[guessCol, guessRow]
+        if (guessCell == GuessCell.UNSET) {
+            // If the guess hasn't been made before, update the game state
+            val guessResult = get(guessCol, guessRow)
+            when (guessResult) {
+                GuessResult.MISS -> {
+                    cells[guessCol, guessRow] = GuessCell.MISS
                 }
-                return
+
+              /*  GuessResult.HIT -> {
+                    // If it's a hit, mark the guess cell as a hit and update the opponent's ships
+                    cells[guessCol, guessRow] = GuessCell.HIT
+                    for (ship in ships) {
+                        if (ship.contains(guessCol, guessRow)) {
+                            ship.hit(guessCol, guessRow)
+                            if (ship.isSunk()) {
+                                // If the ship is sunk, mark all its cells as hits
+                                for (cell in ship.getOccupiedCells()) {
+                                    cells[cell.col, cell.row] = GuessCell.HIT
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+            }
+        } else {
+            // If the guess has been made before, generate a new guess
+            startOpponentTurn()
+        }
+*/
+        // Update the view to reflect the changes in the game state
             }
         }
     }
+
 
 
     private val shipsSunk = MutableList(ships.size) { false }
@@ -193,17 +201,37 @@ class HomeView2 : View {
                     }
                 }
             }
-            MotionEvent.ACTION_MOVE -> {
+                MotionEvent.ACTION_MOVE -> {
+            val touchX = event.x
+            val touchY = event.y
 
-                val touchX = event.x
-                val touchY = event.y
+            selectedShip?.let { ship ->
+                val newLeft = touchX - offsetX - gridLeft - circleSpacing
+                val newTop = touchY - offsetY - gridTop - circleSpacing
+                val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
+                val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
 
-                selectedShip?.let { ship ->
-                    val newLeft = touchX - offsetX - gridLeft - circleSpacing
-                    val newTop = touchY - offsetY - gridTop - circleSpacing
-                    val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
-                    val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
+                // Check for collision with other ships
+                var hasCollision = false
+                for (otherShip in ships) {
+                    if (otherShip != ship) {
+                        val otherLeft = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.left)
+                        val otherTop = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.top)
+                        val otherRight = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.right)) + circleDiameter
+                        val otherBottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.bottom)) + circleDiameter
 
+                        // Check for overlap
+                        if (Rect.intersects(Rect(newLeft.toInt(), newTop.toInt(), newRight.toInt(), newBottom.toInt()),
+                                Rect(otherLeft.toInt(), otherTop.toInt(),
+                                    otherRight.toInt(), otherBottom.toInt()
+                                ))) {
+                            hasCollision = true
+                            break
+                        }
+                    }
+                }
+
+                if (!hasCollision) {
                     // Update the ship's position
                     ship.left = (newLeft / (circleDiameter + circleSpacing)).toInt()
                     ship.top = (newTop / (circleDiameter + circleSpacing)).toInt()
@@ -214,12 +242,13 @@ class HomeView2 : View {
                     shipPositions[ship] = Pair(ship.left, ship.top)
                     println(shipPositions)
                     // Invalidate the view to trigger a redraw
-
                     invalidate()
                 }
-                return true
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+
+            return true
+        }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 selectedShip = null
                 offsetX = 0f
                 offsetY = 0f

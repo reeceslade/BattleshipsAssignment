@@ -30,6 +30,11 @@ inline fun Ship.forEachIndex(action: (Int, Int) -> Unit) {
         }
     }
 }
+fun Ship.overlaps(other: Ship): Boolean {
+    val leftOverlap = (left..right).intersect(other.left..other.right).count()
+    val topOverlap = (top..bottom).intersect(other.top..other.bottom).count()
+    return leftOverlap > 0 && topOverlap > 0
+}
 
 inline fun Ship.mapIndices(action: (Int, Int) -> Int): IntMatrix {
     return IntMatrix(width, height) { mx, my ->

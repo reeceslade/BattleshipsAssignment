@@ -1,8 +1,8 @@
 package Bships
 
-import Bships.StudentShip.Companion.generateRandomShips
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.Ship
+import uk.ac.bournemouth.ap.battleshiplib.overlaps
 import kotlin.random.Random
 
 class StudentShip(
@@ -35,10 +35,5 @@ class StudentShip(
         }
     }
 
-        fun overlaps(other: StudentShip): Boolean {
-         val leftOverlap = (left..right).intersect(other.left..other.right).count()
-         val topOverlap = (top..bottom).intersect(other.top..other.bottom).count()
-         return leftOverlap > 0 && topOverlap > 0
-     }
  }
 
