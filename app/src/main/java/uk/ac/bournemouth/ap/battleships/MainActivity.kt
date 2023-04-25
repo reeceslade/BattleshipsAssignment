@@ -11,9 +11,9 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         val playGameButton = findViewById<Button>(R.id.playGameBtn)
         playGameButton.setOnClickListener {
-            val shipPositions = listOf<Pair<Int, Int>>(/* Add your ship positions here */)
-            val homeView3 = HomeView3(this, shipPositions)
-            setContentView(homeView3)
+          //  val shipPositions = listOf<Pair<Int, Int>>(/* Add your ship positions here */)
+            val homeView2 = HomeView2(this)
+            setContentView(homeView2)
         }
 
         val exitGameButton = findViewById<Button>(R.id.btn_exit)
