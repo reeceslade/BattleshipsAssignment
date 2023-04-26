@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 
 class HomeView3 : AppCompatActivity(), FragmentTest.OnShipPositionsReadyListener {
+    private var shipPositionsData: HashMap<Ship, Pair<Int, Int>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,5 +19,7 @@ class HomeView3 : AppCompatActivity(), FragmentTest.OnShipPositionsReadyListener
 
     override fun onShipPositionsReady(shipPositions: HashMap<Ship, Pair<Int, Int>>) {
         // Receive the shipPositions data here and perform desired action
+        shipPositionsData = shipPositions
+
     }
 }

@@ -47,7 +47,6 @@ class HomeView2 : View {
         style = Paint.Style.FILL
         color = Color.BLACK
     }
-    private val buttonTextSize = 48f // Set the text size to 48dp
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
