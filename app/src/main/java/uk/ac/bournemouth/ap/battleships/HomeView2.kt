@@ -33,13 +33,7 @@ class HomeView2 : View {
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
     val cells = MutableMatrix<GuessCell>(colCount, rowCount, GuessCell.UNSET)
-
-    private val buttonTextPaint = Paint().apply {
-        // Define button text color
-        color = Color.WHITE // Set the text color to red
-        textSize = 48f // Set the text size to 48dp
-        textAlign = Paint.Align.CENTER
-    }
+    
 
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -57,7 +51,7 @@ class HomeView2 : View {
         style = Paint.Style.FILL
         color = Color.BLACK
     }
-    private val buttonTextSize = 48f // Set the text size to 48dp
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
@@ -66,13 +60,7 @@ class HomeView2 : View {
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
         xPaint.strokeWidth = circleSpacing / 2f
-        // Update button bounds
-        val buttonWidth = w / 2f
-        val buttonHeight = h / 10f
-        val buttonLeft = (w - buttonWidth) / 2f
-        val buttonTop = h - buttonHeight * 2
-        buttonBounds.set(buttonLeft, buttonTop, buttonLeft + buttonWidth, buttonTop + buttonHeight)
-    }
+     }
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {}
     override fun onDraw(canvas: Canvas) {
@@ -106,8 +94,6 @@ class HomeView2 : View {
                 invalidate()
             }
         }
-        canvas.drawRect(buttonBounds, player1Paint)
-        canvas.drawText("Confirm Placement", buttonBounds.centerX(), buttonBounds.centerY() + buttonTextSize / 2, buttonTextPaint)
     }
 
     private val shipsSunk = MutableList(ships.size) { false }
@@ -131,7 +117,7 @@ class HomeView2 : View {
             MotionEvent.ACTION_DOWN -> {
                 val touchX = event.x
                 val touchY = event.y
-                if (buttonBounds.contains(touchX, touchY)) {
+              /*  if (buttonBounds.contains(touchX, touchY)) {
                     placementConfirmed = true
                     // Start opponent's turn to randomly shoot at ships
                    // startOpponentTurn()
@@ -139,7 +125,7 @@ class HomeView2 : View {
                     Snackbar.make(this, "Button clicked", Snackbar.LENGTH_SHORT).show()
                     invalidate()
                     return true
-                }
+                } */
                 // Check if the touch coordinates are within a ship's bounding box
                 for (ship in ships) {
                     val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
