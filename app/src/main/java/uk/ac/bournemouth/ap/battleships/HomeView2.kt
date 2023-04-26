@@ -7,14 +7,10 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
-import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.Ship
-import uk.ac.bournemouth.ap.battleshiplib.overlaps
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
-import java.lang.reflect.Array.get
-import kotlin.random.Random
+import kotlin.collections.set
 
 class HomeView2 : View {
     constructor(context: Context?) : super(context)
@@ -26,7 +22,6 @@ class HomeView2 : View {
     )
     private var placementConfirmed = false
     private val ships = StudentShip.generateRandomShips(10, 10)
-    private val buttonBounds = RectF()
     private val colCount = 10
     private val rowCount = 10
     private var circleDiameter: Float = 0f
@@ -34,12 +29,7 @@ class HomeView2 : View {
     private var circleSpacingRatio: Float = 0.2f
     val cells = MutableMatrix<GuessCell>(colCount, rowCount, GuessCell.UNSET)
 
-    private val buttonTextPaint = Paint().apply {
-        // Define button text color
-        color = Color.WHITE // Set the text color to red
-        textSize = 48f // Set the text size to 48dp
-        textAlign = Paint.Align.CENTER
-    }
+
 
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -66,12 +56,6 @@ class HomeView2 : View {
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
         xPaint.strokeWidth = circleSpacing / 2f
-        // Update button bounds
-        val buttonWidth = w / 2f
-        val buttonHeight = h / 10f
-        val buttonLeft = (w - buttonWidth) / 2f
-        val buttonTop = h - buttonHeight * 2
-        buttonBounds.set(buttonLeft, buttonTop, buttonLeft + buttonWidth, buttonTop + buttonHeight)
     }
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {}
@@ -106,8 +90,6 @@ class HomeView2 : View {
                 invalidate()
             }
         }
-        canvas.drawRect(buttonBounds, player1Paint)
-        canvas.drawText("Confirm Placement", buttonBounds.centerX(), buttonBounds.centerY() + buttonTextSize / 2, buttonTextPaint)
     }
 
     private val shipsSunk = MutableList(ships.size) { false }
@@ -131,15 +113,7 @@ class HomeView2 : View {
             MotionEvent.ACTION_DOWN -> {
                 val touchX = event.x
                 val touchY = event.y
-                if (buttonBounds.contains(touchX, touchY)) {
-                    placementConfirmed = true
-                    // Start opponent's turn to randomly shoot at ships
-                   // startOpponentTurn()
-                    // Button clicked, do something
-                    Snackbar.make(this, "Button clicked", Snackbar.LENGTH_SHORT).show()
-                    invalidate()
-                    return true
-                }
+
                 // Check if the touch coordinates are within a ship's bounding box
                 for (ship in ships) {
                     val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
