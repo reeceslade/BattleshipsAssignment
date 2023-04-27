@@ -216,6 +216,7 @@ class HomeView: View {
 
     // Create a list to keep track of sunk status of all ships
     private val shipsSunk = MutableList(game.opponent.ships.size) { false }
+    private var isPlayerTurn = true // flag to determine whose turn it is
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -224,53 +225,57 @@ class HomeView: View {
             val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
             if (col in 0 until colCount && row in 0 until rowCount) {
                 val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
-
-                if (foundShip == null) {
-                    if (game.cells[col, row] !is GuessCell.HIT) {
-                        if (game.cells[col, row] !is GuessCell.MISS) {
-                            game.cells[col, row] = GuessCell.MISS
-                            Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                if (isPlayerTurn) {
+                    if (foundShip == null) {
+                        if (game.cells[col, row] !is GuessCell.HIT) {
+                            if (game.cells[col, row] !is GuessCell.MISS) {
+                                game.cells[col, row] = GuessCell.MISS
+                                Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                                isPlayerTurn = false
+                                    // opponentTurn()
+                                //call function from opponent logic to make turn c
+                            } else {
+                                Snackbar.make(this, "Already MISS", Snackbar.LENGTH_SHORT)
+                                    .show()
+                            }
                         } else {
-                            Snackbar.make(this, "Already MISS", Snackbar.LENGTH_SHORT)
+                            Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
                                 .show()
                         }
                     } else {
-                        Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
-                            .show()
+                        val (shipIndex, Ship) = foundShip
+                        if (game.cells[col, row] !is GuessCell.SUNK && game.cells[col, row] !is GuessCell.HIT) {
+                            game.cells[col, row] = GuessCell.HIT(shipIndex)
+                            var isSunk = true
+                            Ship.forEachIndex { x, y ->
+                                isSunk = isSunk && game.cells[x, y] is GuessCell.HIT
+                            }
+                            Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
+                            if (isSunk) {
+                                val state = GuessCell.SUNK(shipIndex)
+                                Ship.forEachIndex { x, y -> game.cells[x, y] = state }
+                                shipsSunk[shipIndex] = true
+                                GuessResult.SUNK(shipIndex)
+                                Snackbar.make(this, "Ship sunk", Snackbar.LENGTH_SHORT).show()
+
+                                if (shipsSunk.all { it }) {
+                                    showGameOverScreen()
+                                }
+
+                            } else {
+                                GuessResult.HIT(shipIndex)
+                                Snackbar.make(this, "Ship hit", Snackbar.LENGTH_SHORT).show()
+                            }
+                        } else if (game.cells[col, row] is GuessCell.HIT) {
+                            Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            Snackbar.make(this, "Ship already sunk", Snackbar.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
-                    val (shipIndex, Ship) = foundShip
-                    if (game.cells[col, row] !is GuessCell.SUNK && game.cells[col, row] !is GuessCell.HIT) {
-                        game.cells[col, row] = GuessCell.HIT(shipIndex)
-                        var isSunk = true
-                        Ship.forEachIndex { x, y ->
-                            isSunk = isSunk && game.cells[x, y] is GuessCell.HIT
-                        }
-                        Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
-                        if (isSunk) {
-                            val state = GuessCell.SUNK(shipIndex)
-                            Ship.forEachIndex { x, y -> game.cells[x, y] = state }
-                            shipsSunk[shipIndex] = true
-                            GuessResult.SUNK(shipIndex)
-                            Snackbar.make(this, "Ship sunk", Snackbar.LENGTH_SHORT).show()
-
-                            if (shipsSunk.all { it }) {
-                                showGameOverScreen()
-                            }
-
-                        } else {
-                            GuessResult.HIT(shipIndex)
-                            Snackbar.make(this, "Ship hit", Snackbar.LENGTH_SHORT).show()
-                        }
-                    } else if (game.cells[col, row] is GuessCell.HIT) {
-                        Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        Snackbar.make(this, "Ship already sunk", Snackbar.LENGTH_SHORT).show()
-                    }
+                    Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
                 }
-            } else {
-                Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
             }
             invalidate()
             return true
