@@ -11,7 +11,7 @@ class HomeViewTest : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.homeview2)
+        setContentView(R.layout.activity_placement_grid)
         val placementButton = findViewById<Button>(R.id.placementBtn)
         placementButton.setOnClickListener {
             var shipPositionsData: HashMap<Ship, Pair<Int, Int>>

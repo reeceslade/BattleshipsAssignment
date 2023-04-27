@@ -1,5 +1,6 @@
 package uk.ac.bournemouth.ap.battleships
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -11,11 +12,9 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         val playGameButton = findViewById<Button>(R.id.playGameBtn)
         playGameButton.setOnClickListener {
-            val homeView2 = HomeView2(this)
-            setContentView(homeView2)
+            val intent = Intent(this, PlayerPlacementActivity::class.java)
+            startActivity(intent)
         }
-
-
         val exitGameButton = findViewById<Button>(R.id.btn_exit)
         exitGameButton.setOnClickListener {
             finish() // Finish the activity, which will exit the game

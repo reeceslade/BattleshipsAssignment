@@ -8,10 +8,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Battleships">
-        <activity android:name=".HomeViewTest" />
-        <activity android:name=".HomeView3" />
-        <activity android:name=".HomeView2" />
-        <activity android:name=".HomeView" />
+        <activity android:name=".PlayerGridActivity" />
+        <activity android:name=".PlayerPlacementActivity" />
+        <activity android:name=".GamePlayActivity" />
         <activity
             android:name=".GameOverActivity"
             android:exported="false" />
