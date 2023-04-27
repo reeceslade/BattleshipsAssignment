@@ -32,7 +32,6 @@ class HomeView: View {
             recalculateDimensions()
             invalidate()
         }
-    private val ships get() = game.opponent.ships
     private val colCount: Int get() = game.columns
     private val rowCount: Int get() = game.rows
     private var circleDiameter: Float = 0f
@@ -43,15 +42,15 @@ class HomeView: View {
         style = Paint.Style.STROKE
         color = Color.BLUE
     }
-    private val noPlayerPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val whitePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.WHITE
     }
-    private val player1Paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val redPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.RED
     }
-    private val xPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val shipPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.BLACK
     }
@@ -66,7 +65,7 @@ class HomeView: View {
         circleDiameter = minOf(diameterX, diameterY)
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
-        xPaint.strokeWidth = circleSpacing / 2f
+        shipPaint.strokeWidth = circleSpacing / 2f
     }
 
     private val gridLeft = 0f
@@ -92,7 +91,6 @@ class HomeView: View {
         //SHIPS
         //SHIPS
 
-        // MISSED CELLS
         for (row in 0 until rowCount) {
             val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
             for (col in 0 until colCount) {
@@ -103,27 +101,27 @@ class HomeView: View {
                         val startY = cy - radius
                         val endX = startX + circleDiameter
                         val endY = cy + radius
-                        canvas.drawLine(startX, startY, endX, endY, xPaint)
-                        canvas.drawLine(startX, endY, endX, startY, xPaint)
+                        canvas.drawLine(startX, startY, endX, endY, shipPaint)
+                        canvas.drawLine(startX, endY, endX, startY, shipPaint)
                     }
                     is GuessCell.HIT -> {
                         val cx =
                             gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
                         val cy =
                             gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
-                        canvas.drawCircle(cx, cy, radius, player1Paint)
+                        canvas.drawCircle(cx, cy, radius, redPaint)
                     }
                     is GuessCell.SUNK -> {
                         val cx =
                             gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
                         val cy =
                             gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
-                        canvas.drawCircle(cx, cy, radius, player1Paint)
+                        canvas.drawCircle(cx, cy, radius, redPaint)
                         val startX = cx - radius
                         val startY = cy
                         val endX = cx + radius
                         val endY = cy
-                        canvas.drawLine(startX, startY, endX, endY, xPaint)
+                        canvas.drawLine(startX, startY, endX, endY, shipPaint)
                     }
                     else -> {}
                 }
@@ -138,7 +136,7 @@ class HomeView: View {
         gridRight: Float,
         gridBottom: Float
     ) {
-        canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, noPlayerPaint)
+        canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, whitePaint)
         for (row in 0..rowCount) {
             val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
             canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
@@ -196,7 +194,6 @@ class HomeView: View {
             if (columnTouched in 0 until game.columns && rowTouched in 0 until game.rows) {
                 val guessCell = game[columnTouched, rowTouched]
                 val hit = guessCell is GuessCell.HIT
-
                 val guessResult = if (hit) {
                     val hitShip = game.opponent.ships.find { ship ->
                         (columnTouched in ship.left..ship.right) && (rowTouched in ship.top..ship.bottom)
@@ -216,7 +213,6 @@ class HomeView: View {
 
     // Create a list to keep track of sunk status of all ships
     private val shipsSunk = MutableList(game.opponent.ships.size) { false }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -278,18 +274,9 @@ class HomeView: View {
         return false
     }
 
-
     private fun showGameOverScreen() {
-        // Create an intent to start the new activity
-        val gameOverIntent = Intent(context, GameOverActivity::class.java) // Replace YourNewActivity with the actual name of the activity you want to open
-
-        // Add any extra data to the intent if needed
-        // gameOverIntent.putExtra("key", value)
-
-        // Start the new activity
-        context.startActivity(gameOverIntent)
-        // Finish the current activity if needed
-        // You can implement your own logic here
+        val gameOverIntent = Intent(context, GameOverActivity::class.java)
+     context.startActivity(gameOverIntent)
     }
 
 }
