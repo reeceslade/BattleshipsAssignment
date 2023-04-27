@@ -82,14 +82,13 @@ class HomeView: View {
         drawGrid(canvas, gridLeft, gridTop, gridRight, gridBottom)
         //GRID
         //COMMENT THIS OUT IN ACTUAL GAME PLAY
-       /*for (ship in ships) {
+       for (ship in ships) {
             val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
             val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
             val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
             val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
             canvas.drawRect(left, top, right, bottom, xPaint)
-        } */
-        //SHIPS
+        }  //SHIPS
         //SHIPS
 
         // MISSED CELLS
@@ -216,7 +215,6 @@ class HomeView: View {
 
     // Create a list to keep track of sunk status of all ships
     private val shipsSunk = MutableList(game.opponent.ships.size) { false }
-    private var isPlayerTurn = true // flag to determine whose turn it is
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -225,65 +223,43 @@ class HomeView: View {
             val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
             if (col in 0 until colCount && row in 0 until rowCount) {
                 val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
-                if (isPlayerTurn) {
-                    if (foundShip == null) {
-                        if (game.cells[col, row] !is GuessCell.HIT) {
-                            if (game.cells[col, row] !is GuessCell.MISS) {
-                                game.cells[col, row] = GuessCell.MISS
-                                Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
-                                isPlayerTurn = false
-                                    // opponentTurn()
-                                //call function from opponent logic to make turn c
-                            } else {
-                                Snackbar.make(this, "Already MISS", Snackbar.LENGTH_SHORT)
-                                    .show()
-                            }
-                        } else {
-                            Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
-                                .show()
-                        }
-                    } else {
-                        val (shipIndex, Ship) = foundShip
-                        if (game.cells[col, row] !is GuessCell.SUNK && game.cells[col, row] !is GuessCell.HIT) {
-                            game.cells[col, row] = GuessCell.HIT(shipIndex)
-                            var isSunk = true
-                            Ship.forEachIndex { x, y ->
-                                isSunk = isSunk && game.cells[x, y] is GuessCell.HIT
-                            }
-                            Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
-                            if (isSunk) {
-                                val state = GuessCell.SUNK(shipIndex)
-                                Ship.forEachIndex { x, y -> game.cells[x, y] = state }
-                                shipsSunk[shipIndex] = true
-                                GuessResult.SUNK(shipIndex)
-                                Snackbar.make(this, "Ship sunk", Snackbar.LENGTH_SHORT).show()
-
-                                if (shipsSunk.all { it }) {
-                                    showGameOverScreen()
-                                }
-
-                            } else {
-                                GuessResult.HIT(shipIndex)
-                                Snackbar.make(this, "Ship hit", Snackbar.LENGTH_SHORT).show()
-                            }
-                        } else if (game.cells[col, row] is GuessCell.HIT) {
-                            Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
-                                .show()
-                        } else {
-                            Snackbar.make(this, "Ship already sunk", Snackbar.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
+                if (foundShip == null) {
+                    game.cells[col, row] = GuessCell.MISS
                     Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                    //if the coords are empty (dont have the ship and index) == MISS
+                } else {
+                    val (shipIndex, Ship) = foundShip
+                    game.cells[col, row] = GuessCell.HIT(shipIndex)
+                    var isSunk = true
+                    Ship.forEachIndex { x, y -> isSunk = isSunk && game.cells[x, y] is GuessCell.HIT }
+                    Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
+
+                    if (isSunk) {
+                        val state = GuessCell.SUNK(shipIndex)
+                        Ship.forEachIndex { x, y -> game.cells[x, y] = state }
+                        shipsSunk[shipIndex] = true
+                        GuessResult.SUNK(shipIndex)
+                        Snackbar.make(this, "Ship sunkk", Snackbar.LENGTH_SHORT).show()
+
+                        if (shipsSunk.all { it }) {
+                            showGameOverScreen()
+                        }
+
+                    } else {
+                        GuessResult.HIT(shipIndex)
+
+                        Snackbar.make(this, "Ship hitt", Snackbar.LENGTH_SHORT).show()
+                    }
                 }
+            } else {
+                // Display a message indicating that the guess missed
+                Snackbar.make(this, "Ship misseddd", Snackbar.LENGTH_SHORT).show()
             }
             invalidate()
             return true
         }
         return false
     }
-
-
     private fun showGameOverScreen() {
         // Create an intent to start the new activity
         val gameOverIntent = Intent(context, GameOverActivity::class.java) // Replace YourNewActivity with the actual name of the activity you want to open
