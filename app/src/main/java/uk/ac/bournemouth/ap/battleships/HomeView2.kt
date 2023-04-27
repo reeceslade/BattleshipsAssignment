@@ -3,10 +3,14 @@ package uk.ac.bournemouth.ap.battleships
 import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
@@ -55,13 +59,11 @@ class HomeView2 : View {
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
         xPaint.strokeWidth = circleSpacing / 2f
-
     }
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {}
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         val gridLeft = 0f
         val gridTop = 0f
         val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
