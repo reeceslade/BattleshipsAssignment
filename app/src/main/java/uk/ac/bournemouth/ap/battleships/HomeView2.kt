@@ -26,6 +26,7 @@ class HomeView2 : View {
     )
     private var placementConfirmed = false
     private val ships = StudentShip.generateRandomShips(10, 10)
+    private var shipPositions = HashMap<Ship, Pair<Int, Int>>()
     private val colCount = 10
     private val rowCount = 10
     private var circleDiameter: Float = 0f
@@ -33,6 +34,10 @@ class HomeView2 : View {
     private var circleSpacingRatio: Float = 0.2f
     val cells = MutableMatrix<GuessCell>(colCount, rowCount, GuessCell.UNSET)
 
+
+    fun setShipPositions(shipPositions: HashMap<Ship, Pair<Int, Int>>) {
+        this.shipPositions = shipPositions
+    }
 
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -64,6 +69,7 @@ class HomeView2 : View {
     private fun recalculateDimensions(w: Int = width, h: Int = height) {}
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         val gridLeft = 0f
         val gridTop = 0f
         val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
@@ -99,7 +105,6 @@ class HomeView2 : View {
     private val gridLeft = 0f
     private val gridTop = 0f
     // Inside the onTouchEvent() method
-    private val shipPositions = HashMap<Ship, Pair<Int, Int>>()
     private var selectedShip: Ship? = null
     private var offsetY: Float = 0f
     private var offsetX: Float = 0f

@@ -15,7 +15,7 @@ class PlayerPlacementActivity: AppCompatActivity() {
             val snackbar = Snackbar.make(it, "Your message here", Snackbar.LENGTH_SHORT)
             snackbar.show()
             val intent = Intent(this, GamePlayActivity::class.java)
-            intent.putExtra("shipPositions", shipPositions)
+            intent.putExtra("placementConfirmed", true)
             startActivity(intent)
         }
     }
