@@ -7,4 +7,5 @@
     <string name="restart">restart</string>
     <string name="game_won">Game Won!</string>
     <string name="your_opponents_fleet_has_been_destroyed">Your opponents fleet has been destroyed!</string>
+    <string name="confirm_placement">Confirm Placement</string>
 </resources>

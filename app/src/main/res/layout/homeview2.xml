@@ -7,19 +7,22 @@
 
     <uk.ac.bournemouth.ap.battleships.HomeView2
         android:id="@+id/homeView2"
-        android:layout_width="423dp"
-        android:layout_height="415dp"
+        android:layout_width="415dp"
+        android:layout_height="411dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/placementBtn"
-        android:layout_width="173dp"
-        android:layout_height="86dp"
-        android:layout_marginStart="136dp"
-        android:layout_marginLeft="136dp"
-        android:layout_marginTop="168dp"
-        android:text="Button"
+        android:layout_width="241dp"
+        android:layout_height="87dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginLeft="84dp"
+        android:layout_marginTop="72dp"
+        android:text="@string/confirm_placement"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#1435EC"
+        app:iconTint="#0E2FE6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homeView2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

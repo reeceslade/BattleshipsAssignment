@@ -3,10 +3,14 @@ package uk.ac.bournemouth.ap.battleships
 import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
@@ -30,7 +34,6 @@ class HomeView2 : View {
     val cells = MutableMatrix<GuessCell>(colCount, rowCount, GuessCell.UNSET)
 
 
-
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         color = Color.BLUE
@@ -47,6 +50,7 @@ class HomeView2 : View {
         style = Paint.Style.FILL
         color = Color.BLACK
     }
+    private val buttonTextSize = 48f // Set the text size to 48dp
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
