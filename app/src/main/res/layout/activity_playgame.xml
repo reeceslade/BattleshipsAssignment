@@ -15,13 +15,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <uk.ac.bournemouth.ap.battleships.HomeView2
-        android:id="@+id/homeView22"
-        android:layout_width="356dp"
-        android:layout_height="315dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginLeft="36dp"
-        android:layout_marginTop="120dp"
-        app:layout_constraintStart_toStartOf="parent"
+    <uk.ac.bournemouth.ap.battleships.HomeView3
+        android:id="@+id/homeView32"
+        android:layout_width="344dp"
+        android:layout_height="410dp"
+        android:layout_marginTop="88dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginRight="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homeView3" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
