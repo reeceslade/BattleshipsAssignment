@@ -28,7 +28,6 @@ class HomeView: View {
     var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10, 10, StudentShip.generateRandomShips(10, 10)))
         set(value) {
             field = value
-            // After the new value is set, make sure to recalculate sizes and then trigger a redraw
             recalculateDimensions()
             invalidate()
         }

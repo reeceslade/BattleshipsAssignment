@@ -19,8 +19,6 @@ class HomeView2 : View {
         defStyleAttr
     )
 
-
-
     /*  fun handleComputerTurn() {
                // Generate a random column and row
                val randomCol = (0 until colCount).random()

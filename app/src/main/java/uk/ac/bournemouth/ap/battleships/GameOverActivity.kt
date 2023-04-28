@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
 import android.widget.Button
+import kotlin.system.exitProcess
 
 class GameOverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +21,7 @@ class GameOverActivity : AppCompatActivity() {
         }
         val exitGameButton = findViewById<Button>(R.id.btn_exit)
         exitGameButton.setOnClickListener {
-            finish()
+            exitProcess(0)
         }
     }
 }
