@@ -38,9 +38,10 @@ class HomeView: View {
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
 
+
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.BLUE
+        color = Color.RED
     }
     private val whitePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -105,23 +106,17 @@ class HomeView: View {
                         canvas.drawLine(startX, endY, endX, startY, shipPaint)
                     }
                     is GuessCell.HIT -> {
-                        val cx =
-                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
-                        val cy =
-                            gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
-                        canvas.drawCircle(cx, cy, radius, redPaint)
+                        val cx = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                        val centerY = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
+                        canvas.drawCircle(cx, centerY, radius, redPaint)
                     }
                     is GuessCell.SUNK -> {
-                        val cx =
-                            gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
-                        val cy =
-                            gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
-                        canvas.drawCircle(cx, cy, radius, redPaint)
+                        val cx = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * col) + radius
+                        val centerY = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * row) + radius
+                        canvas.drawCircle(cx, centerY, radius, redPaint)
                         val startX = cx - radius
-                        val startY = cy
                         val endX = cx + radius
-                        val endY = cy
-                        canvas.drawLine(startX, startY, endX, endY, shipPaint)
+                        canvas.drawLine(startX, cy, endX, cy, shipPaint)
                     }
                     else -> {}
                 }
@@ -211,7 +206,6 @@ class HomeView: View {
         }
     })
 
-    // Create a list to keep track of sunk status of all ships
     private val shipsSunk = MutableList(game.opponent.ships.size) { false }
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {

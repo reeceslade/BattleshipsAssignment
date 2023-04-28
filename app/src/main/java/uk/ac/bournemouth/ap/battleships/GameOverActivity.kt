@@ -8,7 +8,7 @@ import android.widget.Button
 class GameOverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_over)
+        setContentView(R.layout.activity_gameover)
         supportActionBar?.hide()
 
         val restartBtn = findViewById<Button>(R.id.restartBtn)

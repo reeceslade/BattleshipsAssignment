@@ -8,7 +8,7 @@ import android.widget.Button
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        setContentView(R.layout.activity_homepage)
         supportActionBar?.hide()
         val playGameButton = findViewById<Button>(R.id.playGameBtn)
         playGameButton.setOnClickListener {
