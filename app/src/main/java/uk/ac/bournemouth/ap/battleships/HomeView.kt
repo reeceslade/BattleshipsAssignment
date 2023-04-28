@@ -205,7 +205,15 @@ class HomeView: View {
             return false
         }
     })
-
+    /*  private fun switchComputerTurn() {
+          Handler().postDelayed({
+              val homeView = findViewById<HomeView2>(R.id.homeView22)
+              homeView.handleComputerTurn()
+              playerTurn = 0
+              Snackbar.make(this, "Your turn", Snackbar.LENGTH_SHORT).show()
+          }, 500)
+          invalidate()
+      } */
     private val shipsSunk = MutableList(game.opponent.ships.size) { false }
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -261,6 +269,11 @@ class HomeView: View {
                 }
             } else {
                 Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                /* invalidate()
+                    playerTurn = 0
+                    Handler().postDelayed({
+                        switchComputerTurn()
+                    }, 500)*/
             }
             invalidate()
             return true

@@ -18,6 +18,44 @@ class HomeView2 : View {
         attrs,
         defStyleAttr
     )
+
+
+
+    /*  fun handleComputerTurn() {
+               // Generate a random column and row
+               val randomCol = (0 until colCount).random()
+               val randomRow = (0 until rowCount).random()
+               val guessCell = cells[randomCol, randomRow]
+               val hit = guessCell is GuessCell.HIT
+               val guessResult = if (hit) {
+                   val hitShip = ships.find { ship ->
+                       (randomCol in ship.left..ship.right) && (randomRow in ship.top..ship.bottom)
+                   }
+                   if (hitShip != null) GuessResult.HIT(ships.indexOf(hitShip)) else GuessResult.MISS
+               } else {
+                   GuessResult.MISS
+               }
+
+               // Check if the generated cell contains a ship
+               // Update the cells with the guess result
+               cells[randomCol, randomRow] = when (guessResult) {
+                   GuessResult.MISS -> GuessCell.MISS
+                   is GuessResult.HIT -> GuessCell.HIT(guessResult.shipIndex)
+                   is GuessResult.SUNK -> {
+                       Snackbar.make(findViewById(android.R.id.content), "Missed!", Snackbar.LENGTH_SHORT).show()
+                       GuessCell.SUNK(guessResult.shipIndex)
+                   }
+                   else -> GuessCell.UNSET
+               }
+               if (guessResult == GuessResult.MISS) {
+                   Snackbar.make(findViewById(android.R.id.content), "Missed!", Snackbar.LENGTH_SHORT).show()
+               } else if (guessResult is GuessResult.HIT) {
+                   Snackbar.make(findViewById(android.R.id.content), "Hit!", Snackbar.LENGTH_SHORT).show()
+               }
+               // Redraw the view
+               invalidate()
+           } */
+
     private val ships = StudentShip.generateRandomShips(10, 10)
     private var shipPositions = HashMap<Ship, Pair<Int, Int>>()
     private val colCount = 10
