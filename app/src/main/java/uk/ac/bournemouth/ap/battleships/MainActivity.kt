@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         }
         val exitGameButton = findViewById<Button>(R.id.btn_exit)
         exitGameButton.setOnClickListener {
-            finish()
+            finish() // Finish the activity, which will exit the game
         }
     }
 }

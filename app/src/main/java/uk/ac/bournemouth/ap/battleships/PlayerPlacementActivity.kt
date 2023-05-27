@@ -10,7 +10,6 @@ class PlayerPlacementActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_placement_grid)
-        supportActionBar?.hide()
         val placementBtn = findViewById<Button>(R.id.placementBtn)
         placementBtn.setOnClickListener {
             val snackbar = Snackbar.make(it, "Your message here", Snackbar.LENGTH_SHORT)
