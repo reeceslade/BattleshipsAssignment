@@ -63,6 +63,11 @@ class PlayerGridView : View {
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
 
+    fun setShipPositions(positions: HashMap<Ship, Pair<Int, Int>>) {
+        shipPositions.clear()
+        shipPositions.putAll(positions)
+        invalidate() // Redraw the view with new ship positions
+    }
 
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -88,7 +93,7 @@ class PlayerGridView : View {
     }
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {
-        val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
+        val diameterX = w / (BattleshipGrid.DEFAULT_COLUMNS + (BattleshipGrid.DEFAULT_COLUMNS + 1) * circleSpacingRatio)
         val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
         circleDiameter = minOf(diameterX, diameterY)
         circleSpacing = circleDiameter * circleSpacingRatio

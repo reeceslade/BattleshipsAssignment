@@ -15,7 +15,6 @@ class StudentShip(
     companion object {
         fun generateRandomShips(columns: Int = BattleshipGrid.DEFAULT_COLUMNS, rows: Int = BattleshipGrid.DEFAULT_ROWS, sizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES, random: Random = Random): List<StudentShip> {
             val ships = mutableListOf<StudentShip>()
-
             for (size in sizes) {
                 var ship: StudentShip
                 var isValidPlacement: Boolean
