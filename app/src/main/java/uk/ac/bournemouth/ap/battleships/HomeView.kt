@@ -25,7 +25,7 @@ class HomeView: View {
         defStyleAttr
     )
 
-    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(10, 10, StudentShip.generateRandomShips(10, 10)))
+    var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS, StudentShip.generateRandomShips(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS)))
         set(value) {
             field = value
             recalculateDimensions()

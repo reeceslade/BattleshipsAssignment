@@ -7,6 +7,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.collections.set
 
@@ -54,7 +55,7 @@ class HomeView2 : View {
                invalidate()
            } */
 
-    private val ships = StudentShip.generateRandomShips(10, 10)
+    private val ships = StudentShip.generateRandomShips(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS)
     private var shipPositions = HashMap<Ship, Pair<Int, Int>>()
     private val colCount = 10
     private val rowCount = 10
