@@ -14,9 +14,9 @@ class GameOverActivity : AppCompatActivity() {
         val restartBtn = findViewById<Button>(R.id.restartBtn)
         restartBtn.setOnClickListener {
             // Create a new intent to start the HomeView activity
-            val homeViewIntent = Intent(this, HomeView::class.java)
-            homeViewIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK // Clear back stack and create a new task
-            startActivity(homeViewIntent)
+            val opponentGridViewIntent = Intent(this, OpponentGridView::class.java)
+            opponentGridViewIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK // Clear back stack and create a new task
+            startActivity(opponentGridViewIntent)
             finish() // Finish the GameOverActivity
         }
 

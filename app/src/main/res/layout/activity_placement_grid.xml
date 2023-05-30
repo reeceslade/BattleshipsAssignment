@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.ac.bournemouth.ap.battleships.HomeView2
-        android:id="@+id/homeView2"
+    <uk.ac.bournemouth.ap.battleships.PlayerGridView
+        android:id="@+id/playerGrid"
         android:layout_width="415dp"
         android:layout_height="411dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,5 +24,5 @@
         app:backgroundTint="#1435EC"
         app:iconTint="#0E2FE6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeView2" />
+        app:layout_constraintTop_toBottomOf="@+id/playerGrid" />
 </androidx.constraintlayout.widget.ConstraintLayout>

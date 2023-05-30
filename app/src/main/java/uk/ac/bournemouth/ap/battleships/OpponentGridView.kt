@@ -16,7 +16,7 @@ import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.*
 
-class HomeView: View {
+class OpponentGridView: View {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -153,7 +153,7 @@ class HomeView: View {
             if (!isWithinBounds) {
                 val message = "Invalid move!"
                 val duration = Snackbar.LENGTH_SHORT
-                val snackbar = Snackbar.make(this@HomeView, message, duration)
+                val snackbar = Snackbar.make(this@OpponentGridView, message, duration)
                 snackbar.show()
             }
             return isWithinBounds
@@ -164,19 +164,19 @@ class HomeView: View {
                 is GuessResult.HIT -> {
                     val message = "HIT!"
                     val duration = Snackbar.LENGTH_SHORT
-                    val snackbar = Snackbar.make(this@HomeView, message, duration)
+                    val snackbar = Snackbar.make(this@OpponentGridView, message, duration)
                     snackbar.show()
                 }
                 is GuessResult.SUNK -> {
                     val message = "SUNK!"
                     val duration = Snackbar.LENGTH_SHORT
-                    val snackbar = Snackbar.make(this@HomeView, message, duration)
+                    val snackbar = Snackbar.make(this@OpponentGridView, message, duration)
                     snackbar.show()
                 }
                 is GuessResult.MISS -> {
                     val message = "Miss"
                     val duration = Snackbar.LENGTH_SHORT
-                    val snackbar = Snackbar.make(this@HomeView, message, duration)
+                    val snackbar = Snackbar.make(this@OpponentGridView, message, duration)
                     snackbar.show()
                 }
             }

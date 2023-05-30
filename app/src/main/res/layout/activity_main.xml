@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <uk.ac.bournemouth.ap.battleships.HomeView
-        android:id="@+id/homeView"
+    <uk.ac.bournemouth.ap.battleships.OpponentGridView
+        android:id="@+id/opponentGrid"
         android:layout_width="412dp"
         android:layout_height="409dp"
         android:layout_marginTop="112dp"
