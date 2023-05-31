@@ -4,9 +4,13 @@ import uk.ac.bournemouth.ap.lib.matrix.int.IntMatrix
 import uk.ac.bournemouth.ap.lib.matrix.Matrix
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
 import uk.ac.bournemouth.ap.lib.matrix.ext.Coordinate
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 //assumes shapes are rectangular
 //dont have to use these
-interface Ship {
+@Parcelize
+interface Ship : Parcelable {
     var top: Int
     var left: Int
     var bottom: Int
