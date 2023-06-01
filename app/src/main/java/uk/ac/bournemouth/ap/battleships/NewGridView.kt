@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import uk.ac.bournemouth.ap.battleshiplib.Ship
 
 class NewGridView : View {
     private val colCount = 10
@@ -37,9 +38,9 @@ class NewGridView : View {
         defStyleAttr
     )
 
-    private var shipPositions = HashMap<StudentShip, Pair<Int, Int>>()
+    private var shipPositions = HashMap<Ship, Pair<Int, Int>>()
 
-    fun setShipPositions(positions: HashMap<StudentShip, Pair<Int, Int>>) {
+    fun setShipPositions(positions: HashMap<Ship, Pair<Int, Int>>) {
         shipPositions = positions
         invalidate() // Redraw the view with new ship positions
     }
