@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import uk.ac.bournemouth.ap.battleshiplib.Ship
 
 class PlayerPlacementActivity : AppCompatActivity() {
     private lateinit var playerGridView: PlayerGridView
@@ -18,22 +17,20 @@ class PlayerPlacementActivity : AppCompatActivity() {
 
         val placementBtn = findViewById<Button>(R.id.placementBtn)
         placementBtn.setOnClickListener {
-            // Create a new HashMap to store the ship positions
-            val shipPositions = HashMap<Ship, Pair<Int, Int>>()
+            // Create a new list to store the ship positions
+            val shipPositions = mutableListOf<StudentShip>()
 
-            // Iterate over the ships and add their positions to the HashMap
-            for (ship in playerGridView.ships) {
-                shipPositions[ship] = Pair(ship.left, ship.top)
-            }
+            // Add the ship positions to the list
+            shipPositions.addAll(playerGridView.ships)
 
             // Log the ship positions
-            for ((ship, position) in shipPositions) {
-                Log.d("Ship Positions", "Ship: $ship, Position: $position")
+            for (ship in shipPositions) {
+                Log.d("Ship Positions", "Ship: $ship")
             }
 
-            // Pass the shipPositions HashMap to the GamePlayActivity
+            // Pass the shipPositions list to the GamePlayActivity
             val intent = Intent(this, GamePlayActivity::class.java)
-            intent.putExtra("shipPositions", shipPositions)
+            intent.putParcelableArrayListExtra("shipPositions", ArrayList(shipPositions))
             startActivity(intent)
         }
     }

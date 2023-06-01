@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import uk.ac.bournemouth.ap.battleshiplib.Ship
 
 class NewGridView : View {
     private val colCount = 10
@@ -38,9 +37,9 @@ class NewGridView : View {
         defStyleAttr
     )
 
-    private var shipPositions = HashMap<Ship, Pair<Int, Int>>()
+    private var shipPositions = listOf<StudentShip>()
 
-    fun setShipPositions(positions: HashMap<Ship, Pair<Int, Int>>) {
+    fun setShipPositions(positions: List<StudentShip>) {
         shipPositions = positions
         invalidate() // Redraw the view with new ship positions
     }
@@ -75,12 +74,13 @@ class NewGridView : View {
             val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
-        for ((ship, position) in shipPositions) {
-            val startX = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * position.first
-            val startY = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * position.second
-            val endX = startX + (circleDiameter + circleSpacing) * ship.size
-            val endY = startY + (circleDiameter + circleSpacing)
-            canvas.drawRect(startX, startY, endX, endY, shipPaint)
+        for (ship in shipPositions) {
+            val left = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * ship.left)
+            val top = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * ship.top)
+            val right = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (ship.right)) + circleDiameter
+            val bottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
+            canvas.drawRect(left, top, right, bottom, shipPaint)
+            invalidate()
         }
     }
 }

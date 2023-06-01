@@ -27,6 +27,7 @@ class OpponentGridView: View {
     var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS, StudentShip.generateRandomShips(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS)))
         set(value) {
             field = value
+            field = value
             recalculateDimensions()
             invalidate()
         }

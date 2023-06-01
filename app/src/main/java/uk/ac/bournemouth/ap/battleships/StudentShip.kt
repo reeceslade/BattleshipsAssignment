@@ -7,7 +7,7 @@ import uk.ac.bournemouth.ap.battleshiplib.Ship
 import uk.ac.bournemouth.ap.battleshiplib.overlaps
 import kotlin.random.Random
 
-public class StudentShip(
+class StudentShip(
     override var top: Int,
     override var left: Int,
     override var bottom: Int,
