@@ -16,7 +16,7 @@ class NewGridView : View {
 
     private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.GREEN
+        color = Color.BLUE
     }
     private val whitePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
