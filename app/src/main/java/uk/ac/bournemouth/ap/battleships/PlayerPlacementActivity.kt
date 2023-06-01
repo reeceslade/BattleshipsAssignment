@@ -1,5 +1,4 @@
 package uk.ac.bournemouth.ap.battleships
-import Bships.StudentShip
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
