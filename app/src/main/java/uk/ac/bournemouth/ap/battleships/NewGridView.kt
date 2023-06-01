@@ -25,7 +25,7 @@ class NewGridView : View {
 
     private val shipPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.BLUE
+        color = Color.BLACK
     }
 
 
