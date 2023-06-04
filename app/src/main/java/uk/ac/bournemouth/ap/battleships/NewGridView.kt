@@ -60,7 +60,6 @@ class NewGridView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-//see if it synchs
         val gridLeft = 0f
         val gridTop = 0f
         val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
