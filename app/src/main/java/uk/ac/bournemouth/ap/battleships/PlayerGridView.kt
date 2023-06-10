@@ -130,9 +130,11 @@ class PlayerGridView : View {
 
     private val gridLeft = 0f
     private val gridTop = 0f
+    private val gridRight = colCount * (circleDiameter + circleSpacing) + circleSpacing
+    private val gridBottom = rowCount * (circleDiameter + circleSpacing) + circleSpacing
     private var selectedShip: Ship? = null
-    private var offsetY: Float = 0f
     private var offsetX: Float = 0f
+    private var offsetY: Float = 0f
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -162,6 +164,8 @@ class PlayerGridView : View {
                 val newTop = touchY - offsetY - gridTop - circleSpacing
                 val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
                 val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
+
+               // if (newLeft >= 0f && newRight <= gridRight && newTop >= 0f && newBottom <= gridBottom) {
                 var hasCollision = false
                 for (otherShip in ships) {
                     if (otherShip != ship) {
@@ -169,10 +173,10 @@ class PlayerGridView : View {
                         val otherTop = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.top)
                         val otherRight = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.right)) + circleDiameter
                         val otherBottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.bottom)) + circleDiameter
+
                         if (Rect.intersects(Rect(newLeft.toInt(), newTop.toInt(), newRight.toInt(), newBottom.toInt()),
                                 Rect(otherLeft.toInt(), otherTop.toInt(),
-                                    otherRight.toInt(), otherBottom.toInt()
-                                ))) {
+                                    otherRight.toInt(), otherBottom.toInt()))) {
                             hasCollision = true
                             break
                         }
@@ -187,6 +191,7 @@ class PlayerGridView : View {
                     shipPositions[ship] = Pair(ship.left, ship.top)
                     println(shipPositions)
                     invalidate()
+                    //}
                 }
             }
             return true
