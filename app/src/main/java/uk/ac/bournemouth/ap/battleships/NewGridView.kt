@@ -6,10 +6,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 
 class NewGridView : View {
-    private val colCount = 10
-    private val rowCount = 10
     private var circleDiameter: Float = 0f
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
@@ -51,8 +50,8 @@ class NewGridView : View {
     }
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {
-        val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
-        val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
+        val diameterX = w / (BattleshipGrid.DEFAULT_COLUMNS + (BattleshipGrid.DEFAULT_COLUMNS + 1) * circleSpacingRatio)
+        val diameterY = h / (BattleshipGrid.DEFAULT_ROWS + (BattleshipGrid.DEFAULT_ROWS + 1) * circleSpacingRatio)
         circleDiameter = minOf(diameterX, diameterY)
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
@@ -62,14 +61,14 @@ class NewGridView : View {
         super.onDraw(canvas)
         val gridLeft = 0f
         val gridTop = 0f
-        val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
-        val gridBottom = gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
+        val gridRight = gridLeft + BattleshipGrid.DEFAULT_COLUMNS * (circleDiameter + circleSpacing) + circleSpacing
+        val gridBottom = gridTop + BattleshipGrid.DEFAULT_ROWS * (circleDiameter + circleSpacing) + circleSpacing
         canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, whitePaint)
-        for (row in 0..rowCount) {
+        for (row in 0..BattleshipGrid.DEFAULT_ROWS) {
             val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
             canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
         }
-        for (col in 0..colCount) {
+        for (col in 0..BattleshipGrid.DEFAULT_COLUMNS) {
             val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }

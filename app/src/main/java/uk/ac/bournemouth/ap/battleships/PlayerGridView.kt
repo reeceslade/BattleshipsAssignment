@@ -56,8 +56,6 @@ class PlayerGridView : View {
 
     val ships = StudentShip.generateRandomShips(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS)
     private var shipPositions = HashMap<Ship, Pair<Int, Int>>()
-    private val colCount = 10
-    private val rowCount = 10
     private var circleDiameter: Float = 0f
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
@@ -83,8 +81,8 @@ class PlayerGridView : View {
     }
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        val diameterX = w / (colCount + (colCount + 1) * circleSpacingRatio)
-        val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
+        val diameterX = w / (BattleshipGrid.DEFAULT_COLUMNS + (BattleshipGrid.DEFAULT_COLUMNS + 1) * circleSpacingRatio)
+        val diameterY = h / (BattleshipGrid.DEFAULT_ROWS + (BattleshipGrid.DEFAULT_ROWS + 1) * circleSpacingRatio)
         circleDiameter = minOf(diameterX, diameterY)
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
@@ -93,7 +91,7 @@ class PlayerGridView : View {
 
     private fun recalculateDimensions(w: Int = width, h: Int = height) {
         val diameterX = w / (BattleshipGrid.DEFAULT_COLUMNS + (BattleshipGrid.DEFAULT_COLUMNS + 1) * circleSpacingRatio)
-        val diameterY = h / (rowCount + (rowCount + 1) * circleSpacingRatio)
+        val diameterY = h / (BattleshipGrid.DEFAULT_ROWS + (BattleshipGrid.DEFAULT_ROWS + 1) * circleSpacingRatio)
         circleDiameter = minOf(diameterX, diameterY)
         circleSpacing = circleDiameter * circleSpacingRatio
         gridPaint.strokeWidth = circleSpacing
@@ -104,14 +102,14 @@ class PlayerGridView : View {
 
         val gridLeft = 0f
         val gridTop = 0f
-        val gridRight = gridLeft + colCount * (circleDiameter + circleSpacing) + circleSpacing
-        val gridBottom = gridTop + rowCount * (circleDiameter + circleSpacing) + circleSpacing
+        val gridRight = gridLeft + BattleshipGrid.DEFAULT_COLUMNS * (circleDiameter + circleSpacing) + circleSpacing
+        val gridBottom = gridTop + BattleshipGrid.DEFAULT_ROWS * (circleDiameter + circleSpacing) + circleSpacing
         canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, whitePaint)
-        for (row in 0..rowCount) {
+        for (row in 0..BattleshipGrid.DEFAULT_ROWS) {
             val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
             canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
         }
-        for (col in 0..colCount) {
+        for (col in 0..BattleshipGrid.DEFAULT_COLUMNS) {
             val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
@@ -130,8 +128,8 @@ class PlayerGridView : View {
 
     private val gridLeft = 0f
     private val gridTop = 0f
-    private val gridRight = colCount * (circleDiameter + circleSpacing) + circleSpacing
-    private val gridBottom = rowCount * (circleDiameter + circleSpacing) + circleSpacing
+    private val gridRight = BattleshipGrid.DEFAULT_COLUMNS * (circleDiameter + circleSpacing) + circleSpacing
+    private val gridBottom = BattleshipGrid.DEFAULT_ROWS * (circleDiameter + circleSpacing) + circleSpacing
     private var selectedShip: Ship? = null
     private var offsetX: Float = 0f
     private var offsetY: Float = 0f
@@ -157,45 +155,45 @@ class PlayerGridView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-            val touchX = event.x
-            val touchY = event.y
-            selectedShip?.let { ship ->
-                val newLeft = touchX - offsetX - gridLeft - circleSpacing
-                val newTop = touchY - offsetY - gridTop - circleSpacing
-                val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
-                val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
+                val touchX = event.x
+                val touchY = event.y
+                selectedShip?.let { ship ->
+                    val newLeft = touchX - offsetX - gridLeft - circleSpacing
+                    val newTop = touchY - offsetY - gridTop - circleSpacing
+                    val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
+                    val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
 
-               // if (newLeft >= 0f && newRight <= gridRight && newTop >= 0f && newBottom <= gridBottom) {
-                var hasCollision = false
-                for (otherShip in ships) {
-                    if (otherShip != ship) {
-                        val otherLeft = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.left)
-                        val otherTop = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.top)
-                        val otherRight = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.right)) + circleDiameter
-                        val otherBottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.bottom)) + circleDiameter
+                  //  if (newLeft >= 0f && newRight <= gridRight && newTop >= 0f && newBottom <= gridBottom) {
+                        var hasCollision = false
+                        for (otherShip in ships) {
+                            if (otherShip != ship) {
+                                val otherLeft = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.left)
+                                val otherTop = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * otherShip.top)
+                                val otherRight = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.right)) + circleDiameter
+                                val otherBottom = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (otherShip.bottom)) + circleDiameter
 
-                        if (Rect.intersects(Rect(newLeft.toInt(), newTop.toInt(), newRight.toInt(), newBottom.toInt()),
-                                Rect(otherLeft.toInt(), otherTop.toInt(),
-                                    otherRight.toInt(), otherBottom.toInt()))) {
-                            hasCollision = true
-                            break
+                                if (Rect.intersects(Rect(newLeft.toInt(), newTop.toInt(), newRight.toInt(), newBottom.toInt()),
+                                        Rect(otherLeft.toInt(), otherTop.toInt(),
+                                            otherRight.toInt(), otherBottom.toInt()))) {
+                                    hasCollision = true
+                                    break
+                                }
+                            }
                         }
+                        if (!hasCollision) {
+                            // Update the ship's position
+                            ship.left = (newLeft / (circleDiameter + circleSpacing)).toInt()
+                            ship.top = (newTop / (circleDiameter + circleSpacing)).toInt()
+                            ship.right = (newRight / (circleDiameter + circleSpacing)).toInt() - 1
+                            ship.bottom = (newBottom / (circleDiameter + circleSpacing)).toInt() - 1
+                            shipPositions[ship] = Pair(ship.left, ship.top)
+                            invalidate()
+                      //  }
                     }
                 }
-                if (!hasCollision) {
-                    // Update the ship's position
-                    ship.left = (newLeft / (circleDiameter + circleSpacing)).toInt()
-                    ship.top = (newTop / (circleDiameter + circleSpacing)).toInt()
-                    ship.right = (newRight / (circleDiameter + circleSpacing)).toInt() - 1
-                    ship.bottom = (newBottom / (circleDiameter + circleSpacing)).toInt() - 1
-                    shipPositions[ship] = Pair(ship.left, ship.top)
-                    println(shipPositions)
-                    invalidate()
-                    //}
-                }
+                return true
             }
-            return true
-        }
+
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 selectedShip = null
                 offsetX = 0f
