@@ -220,6 +220,7 @@ class OpponentGridView: View {
             val col = ((event.x - circleSpacing / 2 - gridLeft) / (circleDiameter + circleSpacing)).toInt()
             val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
             if (col in 0 until colCount && row in 0 until rowCount) {
+                opponentGridListener?.onCellSelected(col, row)
                 val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
 
                 if (foundShip == null) {
@@ -278,6 +279,15 @@ class OpponentGridView: View {
             return true
         }
         return false
+    }
+    interface OpponentGridListener {
+        fun onCellSelected(column: Int, row: Int)
+    }
+
+    private var opponentGridListener: OpponentGridListener? = null
+
+    fun setOpponentGridListener(listener: OpponentGridListener) {
+        opponentGridListener = listener
     }
 
     private fun showGameOverScreen() {

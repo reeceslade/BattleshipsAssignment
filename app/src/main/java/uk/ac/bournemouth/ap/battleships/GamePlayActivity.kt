@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-class GamePlayActivity : AppCompatActivity() {
+import com.google.android.material.snackbar.Snackbar
+
+class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListener {
     @SuppressLint("LogConditional")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,5 +26,17 @@ class GamePlayActivity : AppCompatActivity() {
         if (shipPositions != null) {
             playerGrid.setShipPositions(shipPositions)
         }
+
+        val opponentGrid = findViewById<OpponentGridView>(R.id.opponentGrid)
+        opponentGrid.setOpponentGridListener(this)
     }
+
+    override fun onCellSelected(column: Int, row: Int) {
+        val message = "Cell selected: Column $column, Row $row"
+        val duration = Snackbar.LENGTH_SHORT
+        val snackbar = Snackbar.make(findViewById(R.id.opponentGrid), message, duration)
+        snackbar.show()
+    }
+
 }
+
