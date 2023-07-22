@@ -224,64 +224,66 @@ class OpponentGridView: View {
                 val foundShip: BattleshipOpponent.ShipInfo<Ship>? = game.opponent.shipAt(col, row)
 
                 if (foundShip == null) {
+                    opponentGridListener?.onMiss() // Notify the listener about the empty space
                     if (game.cells[col, row] !is GuessCell.HIT) {
                         if (game.cells[col, row] !is GuessCell.MISS) {
                             game.cells[col, row] = GuessCell.MISS
-                            Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
+                            opponentGridListener?.onMiss()
                         } else {
-                            Snackbar.make(this, "Already MISS", Snackbar.LENGTH_SHORT)
-                                .show()
+                            opponentGridListener?.onAlreadyMiss()
                         }
                     } else {
-                        Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
-                            .show()
+                        opponentGridListener?.onAlreadyHit()
                     }
                 } else {
                     val (shipIndex, Ship) = foundShip
+                    opponentGridListener?.onShipTouched(shipIndex)
+
                     if (game.cells[col, row] !is GuessCell.SUNK && game.cells[col, row] !is GuessCell.HIT) {
                         game.cells[col, row] = GuessCell.HIT(shipIndex)
                         var isSunk = true
                         Ship.forEachIndex { x, y ->
                             isSunk = isSunk && game.cells[x, y] is GuessCell.HIT
                         }
-                        Snackbar.make(this, "Ship HIT", Snackbar.LENGTH_SHORT).show()
                         if (isSunk) {
                             val state = GuessCell.SUNK(shipIndex)
                             Ship.forEachIndex { x, y -> game.cells[x, y] = state }
                             shipsSunk[shipIndex] = true
-                            GuessResult.SUNK(shipIndex)
-                            Snackbar.make(this, "Ship sunk", Snackbar.LENGTH_SHORT).show()
+                            opponentGridListener?.onShipSunk(shipIndex) // Notify the listener about the sunk ship
 
                             if (shipsSunk.all { it }) {
-                                showGameOverScreen()
+                                opponentGridListener?.onShipAlreadySunk()
                             }
-
                         } else {
-                            GuessResult.HIT(shipIndex)
-                            Snackbar.make(this, "Ship hit", Snackbar.LENGTH_SHORT).show()
+                            opponentGridListener?.onShipHit()
                         }
                     } else if (game.cells[col, row] is GuessCell.HIT) {
-                        Snackbar.make(this, "Already HIT", Snackbar.LENGTH_SHORT)
-                            .show()
+                        opponentGridListener?.onAlreadyHit()
                     } else {
-                        Snackbar.make(this, "Ship already sunk", Snackbar.LENGTH_SHORT).show()
+                        opponentGridListener?.onShipAlreadySunk()
                     }
                 }
             } else {
-                Snackbar.make(this, "Ship missed", Snackbar.LENGTH_SHORT).show()
-                /* invalidate()
-                    playerTurn = 0
-                    Handler().postDelayed({
-                        switchComputerTurn()
-                    }, 500)*/
+                opponentGridListener?.onMiss() // Notify the listener about the empty space
             }
+
             invalidate()
             return true
         }
         return false
     }
+
+
+
     interface OpponentGridListener {
         fun onCellSelected(column: Int, row: Int)
+        fun onShipSunk(shipIndex: Int)
+        fun onShipTouched(shipIndex: Int)
+        fun onAlreadyMiss()
+        fun onAlreadyHit()
+        fun onShipHit()
+        fun onShipAlreadySunk()
+        fun onMiss()
     }
 
     private var opponentGridListener: OpponentGridListener? = null

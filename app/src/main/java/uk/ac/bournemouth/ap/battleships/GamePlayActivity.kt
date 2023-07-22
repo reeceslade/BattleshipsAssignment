@@ -3,11 +3,14 @@ package uk.ac.bournemouth.ap.battleships
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
+import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 
 class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListener {
-    @SuppressLint("LogConditional")
+    // ... Other code ...
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playgame)
@@ -28,15 +31,39 @@ class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListe
         }
 
         val opponentGrid = findViewById<OpponentGridView>(R.id.opponentGrid)
-        opponentGrid.setOpponentGridListener(this)
+        opponentGrid.setOpponentGridListener(this) // Set the OpponentGridListener here
     }
 
     override fun onCellSelected(column: Int, row: Int) {
-        val message = "Cell selected: Column $column, Row $row"
-        val duration = Snackbar.LENGTH_SHORT
-        val snackbar = Snackbar.make(findViewById(R.id.opponentGrid), message, duration)
-        snackbar.show()
+        // Implement your logic here when a cell is selected in the OpponentGridView
+    }
+
+
+    override fun onMiss() {
+        Snackbar.make(findViewById(R.id.opponentGrid), "SHIP MISSED", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onAlreadyMiss() {
+        Snackbar.make(findViewById(R.id.opponentGrid), "ALREADY MISSED THIS SHIP DONE CLICK TWICE!", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onAlreadyHit() {
+        Snackbar.make(findViewById(R.id.opponentGrid), "ALREADY HIT THIS SHIP DONT CLICK TWICE!", Snackbar.LENGTH_SHORT).show()
+    }
+    override fun onShipHit() {
+        Snackbar.make(findViewById(R.id.opponentGrid), "SHIP AHOY", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onShipAlreadySunk() {
+        Snackbar.make(findViewById(R.id.opponentGrid), "SHIP ALREADY SUNK DONT CLICK TWICE!", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onShipTouched(shipIndex: Int) {
+        // Implement your logic here when a ship is touched in the OpponentGridView
+    }
+
+    override fun onShipSunk(shipIndex: Int) {
+        Snackbar.make(findViewById(R.id.opponentGrid), "YOUVE SUNK A SHIP!", Snackbar.LENGTH_SHORT).show()
     }
 
 }
-
