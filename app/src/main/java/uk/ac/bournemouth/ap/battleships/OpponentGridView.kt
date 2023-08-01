@@ -153,6 +153,7 @@ class OpponentGridView: View {
             if (!isWithinBounds) {
                 val message = "Invalid move!"
                 val duration = Snackbar.LENGTH_SHORT
+
                 val snackbar = Snackbar.make(this@OpponentGridView, message, duration)
                 snackbar.show()
             }
@@ -285,6 +286,22 @@ class OpponentGridView: View {
         fun onShipAlreadySunk()
         fun onMiss()
     }
+
+    fun randomShoot() {
+        // Generate random column and row indices within the grid size
+        val randomColumn = (0 until colCount).random()
+        val randomRow = (0 until rowCount).random()
+
+        // Call the `onTouchEvent` function with the generated indices to simulate a tap on the grid
+        onTouchEvent(
+            MotionEvent.obtain(
+                System.currentTimeMillis(), System.currentTimeMillis(),
+                MotionEvent.ACTION_DOWN, gridLeft + circleSpacing + (randomColumn * (circleDiameter + circleSpacing)),
+                gridTop + circleSpacing + (randomRow * (circleDiameter + circleSpacing)), 0
+            )
+        )
+    }
+
 
     private var opponentGridListener: OpponentGridListener? = null
 
