@@ -205,16 +205,7 @@ class NewGridView : View {
                                 // Handle already SUNK
                                 // You can call a listener method or perform other actions for SUNK here
                             }
-                            else -> {
-                                // Handle a new HIT
-                                guessCells[col][row] = GuessCell.HIT(0) // Update the cell to HIT state
-                                setGuessCells(guessCells)
-                                // You can call a listener method or perform other actions for HIT here
-                                val message = "HIT!"
-                                val duration = Snackbar.LENGTH_SHORT
-                                val snackbar = Snackbar.make(this, message, duration)
-                                snackbar.show()
-                            }
+                            else -> {}
                         }
                     }
                     return true // Consume the touch event
