@@ -49,7 +49,7 @@ class NewGridView : View {
     private var guessCells: Array<Array<GuessCell?>> =
         Array(BattleshipGrid.DEFAULT_COLUMNS) { arrayOfNulls(BattleshipGrid.DEFAULT_ROWS) }
 
-    fun onShipClicked(shipIndex: Int) {
+    private fun onShipClicked(shipIndex: Int) {
         // Display the Snackbar "HIT" message when the ship is clicked
         val message = "HIT!"
         val duration = Snackbar.LENGTH_SHORT
@@ -64,7 +64,7 @@ class NewGridView : View {
         invalidate() // Redraw the view with new ship positions
     }
 
-    fun setGuessCells(cells: Array<Array<GuessCell?>>) {
+    private fun setGuessCells(cells: Array<Array<GuessCell?>>) {
         guessCells = cells
         invalidate() // Redraw the view with the new guess cells
     }
