@@ -46,7 +46,7 @@ class NewGridView : View {
     )
     private var shipPositions = listOf<StudentShip>()
     private var selectedShipIndex: Int = 0 // Initialize with an invalid value
-    private var clickedShipPosition: Pair<Int, Int>? = null
+    private val clickedShipPositions: MutableList<Pair<Int, Int>> = mutableListOf()
 
     private var guessCells: Array<Array<GuessCell?>> =
         Array(BattleshipGrid.DEFAULT_COLUMNS) { arrayOfNulls(BattleshipGrid.DEFAULT_ROWS) }
@@ -90,8 +90,6 @@ class NewGridView : View {
 
     private val gridLeft = 0f
     private val gridTop = 0f
-
-    @SuppressLint("LogConditional")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val gridLeft = 0f
@@ -113,20 +111,12 @@ class NewGridView : View {
                 gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
             canvas.drawRect(left, top, right, bottom, shipPaint)
         }
-
-        clickedShipPosition?.let { clickedPosition ->
+        for (clickedPosition in clickedShipPositions) {
             val (clickedRow, clickedCol) = clickedPosition
-            val ship = shipPositions[selectedShipIndex]
-            for (x in ship.left..ship.right) {
-                for (y in ship.top..ship.bottom) {
-                    val cx = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (x)) + circleDiameter / 2f
-                    val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (y)) + circleDiameter / 2f
-                    canvas.drawCircle(cx, cy, radius, redPaint)
-                }
-            }
+            val cx = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (clickedCol)) + circleDiameter / 2f
+            val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (clickedRow)) + circleDiameter / 2f
+            canvas.drawCircle(cx, cy, radius, redPaint)
         }
-
-
         // Iterate over guessCells to draw hit, miss, and sunk positions
         for (x in 0 until BattleshipGrid.DEFAULT_COLUMNS) {
             val cx = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * x) + radius
@@ -172,7 +162,6 @@ class NewGridView : View {
             canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
         }
     }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
@@ -182,21 +171,20 @@ class NewGridView : View {
                 val col = ((x - circleSpacing / 2 - gridLeft) / (circleDiameter + circleSpacing)).toInt()
                 val row = ((y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
                 if (col in 0 until BattleshipGrid.DEFAULT_COLUMNS && row in 0 until BattleshipGrid.DEFAULT_ROWS) {
-                    // Handle the touch event based on the guessCell state at (col, row)
-                    for (shipIndex in shipPositions.indices) {
-                        val ship = shipPositions[shipIndex]
-                        if (col >= ship.left && col <= ship.right && row >= ship.top && row <= ship.bottom) {
-                            // Store the clicked ship's position as a Pair(row, col)
-                            clickedShipPosition = Pair(row, col)
-                            // Perform actions using the clickedShipPosition
-                            val message = "HIT ship at row ${row + 1}, column ${col + 1}!"
+                    // Check if the clicked cell is part of a ship
+                    val ship = shipPositions.find { it.left <= col && col <= it.right && it.top <= row && row <= it.bottom }
+                    if (ship != null) {
+                        val clickedPosition = Pair(row, col)
+                        if (!clickedShipPositions.contains(clickedPosition)) {
+                            clickedShipPositions.add(clickedPosition)
+                            val message = "HIT ship at row ${row}, column ${col}!"
+                            Log.d("NewGridView", "HIT ship at row $row, column $col!")
                             val duration = Snackbar.LENGTH_SHORT
                             val snackbar = Snackbar.make(this, message, duration)
                             snackbar.show()
-                            // Redraw the view
                             invalidate()
-                            return true // Consume the touch event
                         }
+                        return true
                     }
 
                     val guessCell = guessCells[col][row]
@@ -233,4 +221,5 @@ class NewGridView : View {
         }
         return super.onTouchEvent(event)
     }
+
 }
