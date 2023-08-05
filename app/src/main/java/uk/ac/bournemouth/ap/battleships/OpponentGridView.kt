@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -23,6 +24,11 @@ class OpponentGridView: View {
         attrs,
         defStyleAttr
     )
+
+    // Add this function to log debug messages
+    private fun logDebug(message: String) {
+        Log.d("OpponentGridView", message)
+    }
 
     var game: StudentGrid = StudentGrid(StudentBattleshipOpponent(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS, StudentShip.generateRandomShips(BattleshipGrid.DEFAULT_COLUMNS, BattleshipGrid.DEFAULT_ROWS)))
         set(value) {
@@ -257,6 +263,7 @@ class OpponentGridView: View {
                             }
                         } else {
                             opponentGridListener?.onShipHit()
+                            logDebug("Hit ship at column $col, row $row")
                         }
                     } else if (game.cells[col, row] is GuessCell.HIT) {
                         opponentGridListener?.onAlreadyHit()

@@ -6,12 +6,13 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
-import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import kotlin.math.min
 
 class NewGridView : View {
@@ -45,11 +46,12 @@ class NewGridView : View {
     )
     private var shipPositions = listOf<StudentShip>()
     private var selectedShipIndex: Int = 0 // Initialize with an invalid value
+    private var clickedShipPosition: Pair<Int, Int>? = null
 
     private var guessCells: Array<Array<GuessCell?>> =
         Array(BattleshipGrid.DEFAULT_COLUMNS) { arrayOfNulls(BattleshipGrid.DEFAULT_ROWS) }
 
-    private fun onShipClicked(shipIndex: Int) {
+    private fun onShipClicked() {
         // Display the Snackbar "HIT" message when the ship is clicked
         val message = "HIT!"
         val duration = Snackbar.LENGTH_SHORT
@@ -74,6 +76,7 @@ class NewGridView : View {
         recalculateDimensions(w, h)
     }
 
+
     private fun recalculateDimensions(w: Int = width, h: Int = height) {
         val diameterX =
             w / (BattleshipGrid.DEFAULT_COLUMNS + (BattleshipGrid.DEFAULT_COLUMNS + 1) * circleSpacingRatio)
@@ -88,6 +91,7 @@ class NewGridView : View {
     private val gridLeft = 0f
     private val gridTop = 0f
 
+    @SuppressLint("LogConditional")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val gridLeft = 0f
@@ -109,6 +113,19 @@ class NewGridView : View {
                 gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (ship.bottom)) + circleDiameter
             canvas.drawRect(left, top, right, bottom, shipPaint)
         }
+
+        clickedShipPosition?.let { clickedPosition ->
+            val (clickedRow, clickedCol) = clickedPosition
+            val ship = shipPositions[selectedShipIndex]
+            for (x in ship.left..ship.right) {
+                for (y in ship.top..ship.bottom) {
+                    val cx = gridLeft + circleSpacing + ((circleDiameter + circleSpacing) * (x)) + circleDiameter / 2f
+                    val cy = gridTop + circleSpacing + ((circleDiameter + circleSpacing) * (y)) + circleDiameter / 2f
+                    canvas.drawCircle(cx, cy, radius, redPaint)
+                }
+            }
+        }
+
 
         // Iterate over guessCells to draw hit, miss, and sunk positions
         for (x in 0 until BattleshipGrid.DEFAULT_COLUMNS) {
@@ -169,17 +186,19 @@ class NewGridView : View {
                     for (shipIndex in shipPositions.indices) {
                         val ship = shipPositions[shipIndex]
                         if (col >= ship.left && col <= ship.right && row >= ship.top && row <= ship.bottom) {
-                            // Handle the touch event for a ship
-                            // Update the guessCells and redraw the view
-                            guessCells[col][row] is GuessCell.HIT
-                            setGuessCells(guessCells)
-
-                            // Call the onShipClicked function to display Snackbar and draw red circle
-                            onShipClicked(shipIndex)
-
+                            // Store the clicked ship's position as a Pair(row, col)
+                            clickedShipPosition = Pair(row, col)
+                            // Perform actions using the clickedShipPosition
+                            val message = "HIT ship at row ${row + 1}, column ${col + 1}!"
+                            val duration = Snackbar.LENGTH_SHORT
+                            val snackbar = Snackbar.make(this, message, duration)
+                            snackbar.show()
+                            // Redraw the view
+                            invalidate()
                             return true // Consume the touch event
                         }
                     }
+
                     val guessCell = guessCells[col][row]
                     if (guessCell == null) {
                         // Handle empty cell (MISS)
@@ -196,7 +215,7 @@ class NewGridView : View {
                             is GuessCell.HIT -> {
                                 // Handle already HIT
                                 // You can call a listener method or perform other actions for HIT here
-                                val message = "HIT!"
+                                val message = "I HIT YOUR SHIP!"
                                 val duration = Snackbar.LENGTH_SHORT
                                 val snackbar = Snackbar.make(this, message, duration)
                                 snackbar.show()
@@ -215,4 +234,3 @@ class NewGridView : View {
         return super.onTouchEvent(event)
     }
 }
-
