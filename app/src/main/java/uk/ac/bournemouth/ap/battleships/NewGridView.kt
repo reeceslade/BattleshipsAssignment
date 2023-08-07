@@ -47,6 +47,8 @@ class NewGridView : View {
     private var shipPositions = listOf<StudentShip>()
     private var selectedShipIndex: Int = 0 // Initialize with an invalid value
     private val clickedShipPositions: MutableList<Pair<Int, Int>> = mutableListOf()
+    private val shipHits: MutableMap<StudentShip, MutableSet<Pair<Int, Int>>> = mutableMapOf()
+
 
     private var guessCells: Array<Array<GuessCell?>> =
         Array(BattleshipGrid.DEFAULT_COLUMNS) { arrayOfNulls(BattleshipGrid.DEFAULT_ROWS) }
@@ -177,11 +179,28 @@ class NewGridView : View {
                         val clickedPosition = Pair(row, col)
                         if (!clickedShipPositions.contains(clickedPosition)) {
                             clickedShipPositions.add(clickedPosition)
-                            val message = "HIT ship at row ${row}, column ${col}!"
-                            Log.d("NewGridView", "HIT ship at row $row, column $col!")
-                            val duration = Snackbar.LENGTH_SHORT
-                            val snackbar = Snackbar.make(this, message, duration)
-                            snackbar.show()
+
+                            if (shipHits.containsKey(ship)) {
+                                shipHits[ship]!!.add(clickedPosition)
+                                if (shipHits[ship]!!.size == ship.size) {
+                                    val message = "You sunk a ship at row ${row}, column ${col}!"
+                                    val duration = Snackbar.LENGTH_SHORT
+                                    val snackbar = Snackbar.make(this, message, duration)
+                                    snackbar.show()
+                                } else {
+                                    val message = "HIT ship at row ${row}, column ${col}!"
+                                    val duration = Snackbar.LENGTH_SHORT
+                                    val snackbar = Snackbar.make(this, message, duration)
+                                    snackbar.show()
+                                }
+                            } else {
+                                shipHits[ship] = mutableSetOf(clickedPosition)
+                                val message = "HIT ship at row ${row}, column ${col}!"
+                                val duration = Snackbar.LENGTH_SHORT
+                                val snackbar = Snackbar.make(this, message, duration)
+                                snackbar.show()
+                            }
+
                             invalidate()
                         }
                         return true
