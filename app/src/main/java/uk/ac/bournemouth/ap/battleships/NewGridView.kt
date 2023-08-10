@@ -19,11 +19,7 @@ class NewGridView : View {
     private var circleDiameter: Float = 0f
     private var circleSpacing: Float = 0f
     private var circleSpacingRatio: Float = 0.2f
-
-    private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        color = Color.RED
-    }
+    
     private val whitePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.WHITE
@@ -86,7 +82,7 @@ class NewGridView : View {
             h / (BattleshipGrid.DEFAULT_ROWS + (BattleshipGrid.DEFAULT_ROWS + 1) * circleSpacingRatio)
         circleDiameter = min(diameterX, diameterY)
         circleSpacing = circleDiameter * circleSpacingRatio
-        gridPaint.strokeWidth = circleSpacing
+        redPaint.strokeWidth = circleSpacing
         shipPaint.strokeWidth = circleSpacing / 2f
     }
 
@@ -157,11 +153,11 @@ class NewGridView : View {
         canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, whitePaint)
         for (row in 0..BattleshipGrid.DEFAULT_ROWS) {
             val y = gridTop + circleSpacing / 2 + (circleDiameter + circleSpacing) * row
-            canvas.drawLine(gridLeft, y, gridRight, y, gridPaint)
+            canvas.drawLine(gridLeft, y, gridRight, y, redPaint)
         }
         for (col in 0..BattleshipGrid.DEFAULT_COLUMNS) {
             val x = gridLeft + circleSpacing / 2 + (circleDiameter + circleSpacing) * col
-            canvas.drawLine(x, gridTop, x, gridBottom, gridPaint)
+            canvas.drawLine(x, gridTop, x, gridBottom, redPaint)
         }
     }
     @SuppressLint("ClickableViewAccessibility")
