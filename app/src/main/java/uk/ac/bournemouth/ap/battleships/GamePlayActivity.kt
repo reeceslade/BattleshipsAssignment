@@ -6,7 +6,8 @@
     import androidx.appcompat.app.AppCompatActivity
     import com.google.android.material.snackbar.Snackbar
 
-    class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListener {
+    class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListener,
+        NewGridView.PlayerGridListener {
         private var isPlayerTurn = true
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +25,8 @@
 
             // Pass the ship positions to the PlayerGridView in the GamePlayActivity
             val playerGrid = findViewById<NewGridView>(R.id.newGridView)
+            playerGrid.setPlayerGridListener(this) // Set the OpponentGridListener here
+
             if (shipPositions != null) {
                 playerGrid.setShipPositions(shipPositions)
             }
@@ -34,14 +37,13 @@
 
         override fun onCellSelected(column: Int, row: Int) {
             isPlayerTurn = !isPlayerTurn
-
             // Now, you can use the isPlayerTurn variable to determine whether it's the player's turn or not
             if (isPlayerTurn) {
                 // It's the player's turn, handle player actions here
             } else {
                 Toast.makeText(this@GamePlayActivity, "Computer's turn!", Toast.LENGTH_SHORT).show()
-                val opponentGrid = findViewById<OpponentGridView>(R.id.opponentGrid)
-                opponentGrid.randomShoot()
+                val playerGrid = findViewById<NewGridView>(R.id.newGridView)
+                playerGrid.randomShoot()
             }
         }
 

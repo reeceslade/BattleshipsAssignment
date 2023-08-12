@@ -246,25 +246,25 @@ class NewGridView: View {
             val col = ((event.x - circleSpacing / 2 - gridLeft) / (circleDiameter + circleSpacing)).toInt()
             val row = ((event.y - circleSpacing / 2 - gridTop) / (circleDiameter + circleSpacing)).toInt()
             if (col in 0 until colCount && row in 0 until rowCount) {
-                opponentGridListener?.onCellSelected(col, row)
+                playerGridListener?.onCellSelected(col, row)
                 val clickedShip = shipPositions.find { ship ->
                     (col in ship.left..ship.right) && (row in ship.top..ship.bottom)
                 }
                 if (clickedShip == null) {
-                    opponentGridListener?.onMiss() // Notify the listener about the empty space
+                    playerGridListener?.onMiss() // Notify the listener about the empty space
                     if (game.cells[col, row] !is GuessCell.HIT) {
                         if (game.cells[col, row] !is GuessCell.MISS) {
                             game.cells[col, row] = GuessCell.MISS
-                            opponentGridListener?.onMiss()
+                            playerGridListener?.onMiss()
                         } else {
-                            opponentGridListener?.onAlreadyMiss()
+                            playerGridListener?.onAlreadyMiss()
                         }
                     } else {
-                        opponentGridListener?.onAlreadyHit()
+                        playerGridListener?.onAlreadyHit()
                     }
                 } else {
                     val shipIndex = shipPositions.indexOf(clickedShip)
-                    opponentGridListener?.onShipTouched(shipIndex)
+                    playerGridListener?.onShipTouched(shipIndex)
 
                     if (game.cells[col, row] !is GuessCell.SUNK && game.cells[col, row] !is GuessCell.HIT) {
                         game.cells[col, row] = GuessCell.HIT(shipIndex)
@@ -276,23 +276,23 @@ class NewGridView: View {
                             val state = GuessCell.SUNK(shipIndex)
                             clickedShip.forEachIndex { x, y -> game.cells[x, y] = state }
                             shipsSunk[shipIndex] = true
-                            opponentGridListener?.onShipSunk(shipIndex) // Notify the listener about the sunk ship
+                            playerGridListener?.onShipSunk(shipIndex) // Notify the listener about the sunk ship
 
                             if (shipsSunk.all { it }) {
-                                opponentGridListener?.onShipAlreadySunk()
+                                playerGridListener?.onShipAlreadySunk()
                             }
                         } else {
-                            opponentGridListener?.onShipHit()
+                            playerGridListener?.onShipHit()
                             logDebug("Hit ship at column $col, row $row")
                         }
                     } else if (game.cells[col, row] is GuessCell.HIT) {
-                        opponentGridListener?.onAlreadyHit()
+                        playerGridListener?.onAlreadyHit()
                     } else {
-                        opponentGridListener?.onShipAlreadySunk()
+                        playerGridListener?.onShipAlreadySunk()
                     }
                 }
             } else {
-                opponentGridListener?.onMiss() // Notify the listener about the empty space
+                playerGridListener?.onMiss() // Notify the listener about the empty space
             }
             if (shipsSunk.all { it }) {
                 showGameOverScreen()
@@ -334,10 +334,10 @@ class NewGridView: View {
     }
 
 
-    private var opponentGridListener: PlayerGridListener? = null
+    private var playerGridListener: PlayerGridListener? = null
 
-    fun setOpponentGridListener(listener: PlayerGridListener) {
-        opponentGridListener = listener
+    fun setPlayerGridListener(listener: GamePlayActivity) {
+        playerGridListener = listener
     }
 
     private fun showGameOverScreen() {
