@@ -294,7 +294,9 @@ class NewGridView: View {
             } else {
                 opponentGridListener?.onMiss() // Notify the listener about the empty space
             }
-
+            if (shipsSunk.all { it }) {
+                showGameOverScreen()
+            }
             invalidate()
             return true
         }
