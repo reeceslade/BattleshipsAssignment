@@ -5,6 +5,7 @@
     import android.widget.Toast
     import androidx.appcompat.app.AppCompatActivity
     import com.google.android.material.snackbar.Snackbar
+    import kotlinx.coroutines.delay
 
     class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListener,
         NewGridView.PlayerGridListener {
@@ -43,7 +44,7 @@
             } else {
                 Toast.makeText(this@GamePlayActivity, "Computer's turn!", Toast.LENGTH_SHORT).show()
                 val playerGrid = findViewById<NewGridView>(R.id.newGridView)
-                playerGrid.randomShoot()
+                playerGrid.randomShootWithDelay(2000)
             }
         }
 

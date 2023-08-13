@@ -15,6 +15,10 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.ac.bournemouth.ap.battleshiplib.*
 
 class NewGridView: View {
@@ -318,20 +322,30 @@ class NewGridView: View {
         fun onMiss()
     }
 
-    fun randomShoot() {
-        // Generate random column and row indices within the grid size
-        val randomColumn = (0 until colCount).random()
-        val randomRow = (0 until rowCount).random()
+    @OptIn(DelicateCoroutinesApi::class)
+    fun randomShootWithDelay(delayMillis: Long) {
+        GlobalScope.launch {
+            // Generate random column and row indices within the grid size
+            val randomColumn = (0 until colCount).random()
+            val randomRow = (0 until rowCount).random()
 
-        // Call the `onTouchEvent` function with the generated indices to simulate a tap on the grid
-        onTouchEvent(
-            MotionEvent.obtain(
-                System.currentTimeMillis(), System.currentTimeMillis(),
-                MotionEvent.ACTION_DOWN, gridLeft + circleSpacing + (randomColumn * (circleDiameter + circleSpacing)),
-                gridTop + circleSpacing + (randomRow * (circleDiameter + circleSpacing)), 0
+            // Delay for the specified duration
+            delay(delayMillis)
+
+            // Call the `onTouchEvent` function with the generated indices to simulate a tap on the grid
+            onTouchEvent(
+                MotionEvent.obtain(
+                    System.currentTimeMillis(), System.currentTimeMillis(),
+                    MotionEvent.ACTION_DOWN, gridLeft + circleSpacing + (randomColumn * (circleDiameter + circleSpacing)),
+                    gridTop + circleSpacing + (randomRow * (circleDiameter + circleSpacing)), 0
+                )
             )
-        )
+        }
     }
+
+
+
+
 
 
     private var playerGridListener: PlayerGridListener? = null
