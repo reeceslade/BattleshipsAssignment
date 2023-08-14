@@ -1,5 +1,6 @@
     package uk.ac.bournemouth.ap.battleships
 
+    import android.media.MediaPlayer
     import android.os.Bundle
     import android.util.Log
     import android.widget.Toast
@@ -10,6 +11,7 @@
     class GamePlayActivity : AppCompatActivity(), OpponentGridView.OpponentGridListener,
         NewGridView.PlayerGridListener {
         private var isPlayerTurn = true
+        private var mediaPlayer: MediaPlayer? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -36,6 +38,23 @@
             opponentGrid.setOpponentGridListener(this) // Set the OpponentGridListener here
         }
 
+        private fun playAudio(audioResourceId: Int) {
+            // Release any previous MediaPlayer instance
+            mediaPlayer?.release()
+
+            // Create a new MediaPlayer instance
+            mediaPlayer = MediaPlayer.create(this@GamePlayActivity, audioResourceId)
+
+            // Set up completion listener to release resources when playback is complete
+            mediaPlayer?.setOnCompletionListener {
+                mediaPlayer?.release()
+                mediaPlayer = null
+            }
+
+            // Start playing the audio
+            mediaPlayer?.start()
+        }
+
         override fun onCellSelected(column: Int, row: Int) {
             isPlayerTurn = !isPlayerTurn
             // Now, you can use the isPlayerTurn variable to determine whether it's the player's turn or not
@@ -51,6 +70,7 @@
 
         override fun onMiss() {
             Snackbar.make(findViewById(R.id.opponentGrid), "SHIP MISSED", Snackbar.LENGTH_SHORT).show()
+            playAudio(R.raw.water)
         }
 
         override fun onAlreadyMiss() {
@@ -62,6 +82,7 @@
         }
         override fun onShipHit() {
             Snackbar.make(findViewById(R.id.opponentGrid), "SHIP AHOY", Snackbar.LENGTH_SHORT).show()
+            playAudio(R.raw.gunshot)
         }
 
         override fun onShipAlreadySunk() {
@@ -74,6 +95,12 @@
 
         override fun onShipSunk(shipIndex: Int) {
             Snackbar.make(findViewById(R.id.opponentGrid), "YOUVE SUNK A SHIP!", Snackbar.LENGTH_SHORT).show()
+            playAudio(R.raw.superexplosion)
+        }
+        override fun onDestroy() {
+            super.onDestroy()
+            mediaPlayer?.release()
+            mediaPlayer = null
         }
 
     }
