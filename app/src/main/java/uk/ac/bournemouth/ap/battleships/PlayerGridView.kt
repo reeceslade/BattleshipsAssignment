@@ -6,6 +6,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.Ship
 import kotlin.collections.set
@@ -127,8 +128,24 @@ class PlayerGridView : View {
                     val newTop = touchY - offsetY - gridTop - circleSpacing
                     val newRight = newLeft + ship.width * (circleDiameter + circleSpacing)
                     val newBottom = newTop + ship.height * (circleDiameter + circleSpacing)
+                    val newLeftGrid = (newLeft / (circleDiameter + circleSpacing)).toInt()
+                    val newTopGrid = (newTop / (circleDiameter + circleSpacing)).toInt()
+                    val newRightGrid = (newRight / (circleDiameter + circleSpacing)).toInt() - 1
+                    val newBottomGrid = (newBottom / (circleDiameter + circleSpacing)).toInt() - 1
 
-                  //  if (newLeft >= 0f && newRight <= gridRight && newTop >= 0f && newBottom <= gridBottom) {
+                    var outOfBounds: Boolean = false
+                    if (newLeftGrid < 0 || newRightGrid >= BattleshipGrid.DEFAULT_COLUMNS ||
+                        newTopGrid < 0 || newBottomGrid >= BattleshipGrid.DEFAULT_ROWS) {
+                        outOfBounds = true
+                    } /*else {
+                        ship.left = newLeftGrid
+                        ship.top = newTopGrid
+                        ship.right = newRightGrid
+                        ship.bottom = newBottomGrid
+                        shipPositions[ship] = Pair(ship.left, ship.top)
+                        invalidate()
+                    } */
+
                         var hasCollision = false
                         for (otherShip in ships) {
                             if (otherShip != ship) {
@@ -145,15 +162,13 @@ class PlayerGridView : View {
                                 }
                             }
                         }
-                        if (!hasCollision) {
-                            // Update the ship's position
+                        if (!outOfBounds && !hasCollision) {
                             ship.left = (newLeft / (circleDiameter + circleSpacing)).toInt()
                             ship.top = (newTop / (circleDiameter + circleSpacing)).toInt()
                             ship.right = (newRight / (circleDiameter + circleSpacing)).toInt() - 1
                             ship.bottom = (newBottom / (circleDiameter + circleSpacing)).toInt() - 1
                             shipPositions[ship] = Pair(ship.left, ship.top)
                             invalidate()
-                      //  }
                     }
                 }
                 return true
